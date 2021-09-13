@@ -54,8 +54,8 @@ class Player(pygame.sprite.Sprite):
         # поля персонажа
         self.x = 0
         self.y = 0
-        self.speed_x = None
-        self.speed_y = None
+        self.speed_x = 0
+        self.speed_y = 0
         self.onGround = False
         self.rect.centerx = WIDTH / 2 # базовое расположение
         self.rect.bottom = HEIGHT - 50 - 2*PLATFORM_HEIGHT
@@ -68,6 +68,10 @@ class Player(pygame.sprite.Sprite):
             self.speed_x = -8
         if keystate[pygame.K_RIGHT]:
             self.speed_x = 8
+        if keystate[pygame.K_LEFT] and player.speed_x > 0:
+            player.speed_x = 0
+        if keystate[pygame.K_RIGHT] and player.speed_x < 0:
+            player.speed_x = 0
         self.rect.x += self.speed_x
 
         # перемещение по Y
@@ -76,11 +80,15 @@ class Player(pygame.sprite.Sprite):
             self.speed_y = -8
         if keystate[pygame.K_DOWN]:
             self.speed_y = 8
+        # if not self.onGround:
+        #     self.speed_y += GRAVITY
+        # self.onGround = False
         self.rect.y += self.speed_y
 
-        if not self.onGround:
-            self.speed_y += GRAVITY
-        self.onGround = False
+        # if keystate[pygame.K_LEFT] and player.speed_x < 0:
+        #     player.speed_x = 0
+        # if keystate[pygame.K_RIGHT] and player.speed_x > 0:
+        #     player.speed_x = 0
 
 PLATFORM_WIDTH = 32
 PLATFORM_HEIGHT = 32
@@ -122,41 +130,65 @@ while running:
         # check for closing window
         if event.type == pygame.QUIT:
             running = False
-        # if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-        #     left = True
-        # if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
-        #     right = True
-        # if event.type == pygame.KEYUP and event.key == pygame.K_RIGHT:
-        #     right = False
-        # if event.type == pygame.KEYUP and event.key == pygame.K_LEFT:
-        #     left = False
-        # if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-        #     up = True
-        # if event.type == pygame.KEYUP and event.key == pygame.K_UP:
-        #     up = False
-
-
 
 ##### ОБНОВЛЕНИЕ
     all_sprites.update()
 
 ##### РЕНДЕРИНГ
-    # проверка столкновений с платформами
-    hits = pygame.sprite.spritecollide(player, bloks, False)
-    for hit in hits:
-        if player.speed_x > 0:
-            # hit.rect.right = player.rect.left
-            player.rect.right = hit.rect.left
-        if player.speed_x < 0:
-            # hit.rect.left = player.rect.right
-            player.rect.left = hit.rect.right
+    # # проверка столкновений с платформами
+    # hits = pygame.sprite.spritecollide(player, bloks, False)
+    # for hit in hits:
+    #     if player.speed_x > 0:
+    #         # hit.rect.right = player.rect.left
+    #         player.rect.right = hit.rect.left
+    #     if player.speed_x < 0:
+    #         # hit.rect.left = player.rect.right
+    #         player.rect.left = hit.rect.right
+    #     if player.speed_y > 0:
+    #         # hit.rect.bottom = player.rect.top
+    #         player.rect.bottom = hit.rect.top
+    #     if player.speed_y < 0:
+    #         # hit.rect.top = player.rect.bottom
+    #         player.rect.top = hit.rect.bottom
+    #         # player.onGround = True
+    # Следим ударяем ли мы какой-то другой объект, платформы, например
+
+    block_hit_list = pygame.sprite.spritecollide(player, bloks, False)
+    # Перебираем все возможные объекты, с которыми могли бы столкнуться
+    for block in block_hit_list:
+        # Если мы идем направо,
+        # устанавливает нашу правую сторону на левой стороне предмета, которого мы ударили
+        # if player.speed_x > 0:
+        #     player.rect.right = block.rect.left
+        # elif player.speed_x < 0:
+        #     # В противном случае, если мы движемся влево, то делаем наоборот
+        #     player.rect.left = block.rect.right
+        # if player.speed_y > 0:
+        #     player.rect.bottom = block.rect.top
+        # elif player.speed_y < 0:
+        #     player.rect.top = block.rect.bottom
+
         if player.speed_y > 0:
-            # hit.rect.bottom = player.rect.top
-            player.rect.bottom = hit.rect.top
-        if player.speed_y < 0:
-            # hit.rect.top = player.rect.bottom
-            player.rect.top = hit.rect.bottom
-            # player.onGround = True
+            player.rect.bottom = block.rect.top
+        elif player.speed_y < 0:
+            player.rect.top = block.rect.bottom
+
+        keystate = pygame.key.get_pressed()
+
+        if not (keystate[pygame.K_DOWN] and keystate[pygame.K_LEFT] or \
+           keystate[pygame.K_DOWN] and keystate[pygame.K_RIGHT] or
+           keystate[pygame.K_UP] and keystate[pygame.K_LEFT] or \
+           keystate[pygame.K_UP] and keystate[pygame.K_RIGHT]):
+
+            if player.speed_y > 0:
+                player.rect.bottom = block.rect.top
+            elif player.speed_y < 0:
+                player.rect.top = block.rect.bottom
+            if player.speed_x > 0:
+                player.rect.right = block.rect.left
+            elif player.speed_x < 0:
+                # В противном случае, если мы движемся влево, то делаем наоборот
+                player.rect.left = block.rect.right
 
     screen.fill(BLACK)
     all_sprites.draw(screen)
