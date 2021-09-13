@@ -3,6 +3,7 @@ import pygame
 import random
 from player_file import *
 from constants import *
+from coin_file import *
 
 # Создаем игру и окно
 pygame.init()
@@ -20,8 +21,14 @@ class Platform(pygame.sprite.Sprite):
 
 bloks = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
-player = Player(bloks)
+all_coins = pygame.sprite.Group()
+# one_сoin = Coins()
+# all_coins.add(one_сoin)
+# all_sprites.add(one_сoin)
+
+player = Player(bloks, all_coins)
 all_sprites.add(player)
+
 
 # рисование уровня
 x = y = 0  # координаты
@@ -31,6 +38,10 @@ for row in level:  # вся строка
             one_platform = Platform(x, y)
             bloks.add(one_platform)
             all_sprites.add(one_platform)
+        if col == "*":
+            one_coin = Coins(x, y)
+            all_coins.add(one_coin)
+            all_sprites.add(one_coin)
         x += PLATFORM_WIDTH  # блоки платформы ставятся на ширине блоков
     y += PLATFORM_HEIGHT  # то же самое и с высотой
     x = 0  # на каждой новой строчке начинаем с нуля

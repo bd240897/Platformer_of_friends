@@ -3,7 +3,7 @@ from constants import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, bloks):
+    def __init__(self, bloks, coins):
         pygame.sprite.Sprite.__init__(self)
         # отрисуем персонажа
         self.image = pygame.Surface((30, 40))
@@ -17,8 +17,12 @@ class Player(pygame.sprite.Sprite):
         self.onGround = False
         self.rect.centerx = WIDTH / 2 # базовое расположение
         self.rect.bottom = HEIGHT - 50 - 2*PLATFORM_HEIGHT
+        self.selected_coins = 0
         # чтоб разбить на несколько классов
+
         self.bloks = bloks
+        self.coins = coins
+
     def go_lef(self):
         self.speed_x = -8
 
@@ -44,6 +48,12 @@ class Player(pygame.sprite.Sprite):
         # Если все в порядке, прыгаем вверх
         if len(platform_hit_list) > 0:
             self.onGround = True
+
+    def select_coins(self, coins):
+        selected_coins = pygame.sprite.spritecollide(self, coins, True)
+        for selected_coin in selected_coins:
+            self.selected_coins += 1
+            print(self.selected_coins)
 
     def update(self):
         self.onGround = False
@@ -72,3 +82,5 @@ class Player(pygame.sprite.Sprite):
             elif self.speed_y < 0:
                 self.rect.top = hit.rect.bottom
             self.speed_y = 0
+
+        self.select_coins(self.coins)
