@@ -5,7 +5,7 @@ from constants import *
 class Coins(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((10, 10))
+        self.image = pygame.Surface((SIZE_OF_COIN, SIZE_OF_COIN))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         # поля персонажа
@@ -14,5 +14,17 @@ class Coins(pygame.sprite.Sprite):
         self.speed_x = 0
         self.speed_y = 0
         self.rect.center = (x, y)
+        self.length_way = 0
+
+    def coins_up(self):
+        self.rect.y += self.speed_y
+        self.length_way += self.speed_y
+
+        if self.length_way == 0:
+            self.speed_y = +1
+        if self.length_way == PLATFORM_HEIGHT - SIZE_OF_COIN/2:
+            self.speed_y = -1
+
     def update(self):
-        pass
+        self.coins_up()
+
