@@ -4,6 +4,8 @@ import random
 from player_file import *
 from constants import *
 from coin_file import *
+from mobs_file import *
+import random
 
 # Создаем игру и окно
 pygame.init()
@@ -22,11 +24,23 @@ class Platform(pygame.sprite.Sprite):
 bloks = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 all_coins = pygame.sprite.Group()
-# one_сoin = Coins()
-# all_coins.add(one_сoin)
-# all_sprites.add(one_сoin)
+all_mobs = pygame.sprite.Group()
 
 player = Player(bloks, all_coins)
+#########################
+# cлучаная генерация позиция моба
+def random_mob_position():
+    i, j = (0, 0)
+    while not sum(level_digit[i][j]) > 0:
+        i = random.randint(1, num_blok_x-2)
+        j = random.randint(1, num_blok_y-2)
+    return level_digit[i][j]
+#########################
+for num_mob in range(1,4):
+    mob = Mob(*random_mob_position(), bloks)
+    all_mobs.add(mob)
+    all_sprites.add(mob)
+
 all_sprites.add(player)
 
 

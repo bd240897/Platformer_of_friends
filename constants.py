@@ -1,3 +1,5 @@
+import numpy as np
+
 WIDTH = 800
 HEIGHT = 680
 FPS = 30
@@ -38,3 +40,22 @@ PLATFORM_HEIGHT = 32
 PLATFORM_COLOR = "#FF6262"
 
 SIZE_OF_COIN = 10
+
+x = y = 0  # координаты
+
+num_blok_y = len(level[0])
+num_blok_x = len(level)
+level_digit = [[0 for i in range(num_blok_y)] for j in range(num_blok_x)]
+
+for i, row in enumerate(level):  # вся строка
+    for j, col in enumerate(row):  # каждый символ
+        if col == "-":
+            level_digit[i][j] = (x,y)
+        else:
+            level_digit[i][j] = (0, 0)
+        x += PLATFORM_WIDTH  # блоки платформы ставятся на ширине блоков
+    y += PLATFORM_HEIGHT  # то же самое и с высотой
+    x = 0  # на каждой новой строчке начинаем с нуля
+
+print(level_digit[11][10])
+
