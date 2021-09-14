@@ -26,7 +26,7 @@ all_sprites = pygame.sprite.Group()
 all_coins = pygame.sprite.Group()
 all_mobs = pygame.sprite.Group()
 
-player = Player(bloks, all_coins)
+player = Player(bloks, all_coins, all_mobs)
 #########################
 # cлучаная генерация позиция моба
 def random_mob_position():

@@ -40,9 +40,10 @@ PLATFORM_HEIGHT = 32
 PLATFORM_COLOR = "#FF6262"
 
 SIZE_OF_COIN = 10
+MOB_SIZE = PLATFORM_WIDTH
 
+# цифровая карта платформ
 x = y = 0  # координаты
-
 num_blok_y = len(level[0])
 num_blok_x = len(level)
 level_digit = [[0 for i in range(num_blok_y)] for j in range(num_blok_x)]
@@ -57,5 +58,4 @@ for i, row in enumerate(level):  # вся строка
     y += PLATFORM_HEIGHT  # то же самое и с высотой
     x = 0  # на каждой новой строчке начинаем с нуля
 
-print(level_digit[11][10])
 

@@ -17,6 +17,8 @@ class Mob(pygame.sprite.Sprite):
         self.y_start = y
         self.speed_x = 1
         self.speed_y = 0
+        self.one_blok_below_left = False
+        self.one_blok_below_right = False
 
         self.bloks = bloks
 
@@ -28,30 +30,29 @@ class Mob(pygame.sprite.Sprite):
         self.cheсk_edge()
 
     def cheсk_edge(self):
+        # переменная для проверки что всего один блок под собой
+        self.one_blok_below_left, self.one_blok_below_right = False, False
+
         if self.speed_x > 0:
             self.rect.y += 10
-            self.rect.x += PLATFORM_HEIGHT
+            self.rect.x += MOB_SIZE
             hits = pygame.sprite.spritecollide(self, self.bloks, False)
             if len(hits) == 0:
                 self.speed_x = -1
+                self.one_blok_below_left = True
             self.rect.y -= 10
-            self.rect.x -= PLATFORM_HEIGHT
+            self.rect.x -= MOB_SIZE
+
         if self.speed_x < 0:
             self.rect.y += 10
-            self.rect.x -= PLATFORM_HEIGHT
+            self.rect.x -= MOB_SIZE
             hits = pygame.sprite.spritecollide(self, self.bloks, False)
             if len(hits) == 0:
                 self.speed_x = 1
+                self.one_blok_below_right = True
             self.rect.y -= 10
-            self.rect.x += PLATFORM_HEIGHT
+            self.rect.x += MOB_SIZE
 
-        # i = 11
-        # j = 7
-        # while sum(level_digit[i][j]):
-        #     j += 1
-        #     print('asda')
-        #
-        # if level_digit[i][9][0] < self.rect.x:
-        #     self.speed_x = 0
-
+        if self.one_blok_below_left and self.one_blok_below_right:
+            self.speed_x = 0
 

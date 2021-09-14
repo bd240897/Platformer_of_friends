@@ -3,15 +3,14 @@ from constants import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, bloks, coins):
+    """ Класс для описания игрока и его действий """
+    def __init__(self, bloks, coins, mobs):
         pygame.sprite.Sprite.__init__(self)
         # отрисуем персонажа
         self.image = pygame.Surface((30, 40))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
         # поля персонажа
-        self.x = 0
-        self.y = 0
         self.speed_x = 0
         self.speed_y = 0
         self.onGround = False
@@ -22,6 +21,7 @@ class Player(pygame.sprite.Sprite):
 
         self.bloks = bloks
         self.coins = coins
+        self.mobs = mobs
 
     def go_lef(self):
         self.speed_x = -8
@@ -55,6 +55,11 @@ class Player(pygame.sprite.Sprite):
             self.selected_coins += 1
             print(self.selected_coins)
 
+    def check_mob_collision(self):
+        hits = pygame.sprite.spritecollide(self, self.mobs, False)
+        for hit in hits:
+            hit.kill()
+
     def update(self):
         self.onGround = False
         self.check_onGraound()
@@ -84,3 +89,4 @@ class Player(pygame.sprite.Sprite):
             self.speed_y = 0
 
         self.select_coins(self.coins)
+        self.check_mob_collision()
