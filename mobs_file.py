@@ -10,29 +10,31 @@ class Mob(pygame.sprite.Sprite):
         self.image = pygame.Surface((PLATFORM_WIDTH, PLATFORM_HEIGHT))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
-        self.rect.center = (x - PLATFORM_WIDTH/2,y - PLATFORM_HEIGHT/2)
-
+        self.rect.center = (x - PLATFORM_WIDTH/2, y - PLATFORM_HEIGHT/2)
         # поля персонажа
-        self.x_start = x
-        self.y_start = y
         self.speed_x = 1
         self.speed_y = 0
+        # флаги для проверки что моб стоит на одном блоке
         self.one_blok_below_left = False
         self.one_blok_below_right = False
-
+        # взаимодействует с блоками
         self.bloks = bloks
 
-    def update(self, *args, **kwargs):
+    @staticmethod
+    def random_mob_position():
+        """Выбор случайно позиции для моба"""
+        i, j = (0, 0)
+        while not sum(level_digit[i][j]) > 0:
+            i = random.randint(1, num_blok_x - 2)
+            j = random.randint(1, num_blok_y - 2)
+        return level_digit[i][j]
 
-        self.rect.x += self.speed_x
-        self.rect.y += self.speed_y
-
-        self.cheсk_edge()
-
-    def cheсk_edge(self):
+    def collision_edge(self):
+        """Моб проверяет что это край карты и разворачивается"""
         # переменная для проверки что всего один блок под собой
         self.one_blok_below_left, self.one_blok_below_right = False, False
 
+        # проверка края справа и разворот
         if self.speed_x > 0:
             self.rect.y += 10
             self.rect.x += MOB_SIZE
@@ -43,6 +45,7 @@ class Mob(pygame.sprite.Sprite):
             self.rect.y -= 10
             self.rect.x -= MOB_SIZE
 
+        # проверка края слева и разворот
         if self.speed_x < 0:
             self.rect.y += 10
             self.rect.x -= MOB_SIZE
@@ -53,6 +56,13 @@ class Mob(pygame.sprite.Sprite):
             self.rect.y -= 10
             self.rect.x += MOB_SIZE
 
+        # если стоим на одном блкое то не двигаемся
         if self.one_blok_below_left and self.one_blok_below_right:
             self.speed_x = 0
 
+    def update(self, *args, **kwargs):
+
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
+
+        self.collision_edge()

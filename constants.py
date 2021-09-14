@@ -42,7 +42,7 @@ PLATFORM_COLOR = "#FF6262"
 SIZE_OF_COIN = 10
 MOB_SIZE = PLATFORM_WIDTH
 
-# цифровая карта платформ
+# цифровая карта платформа
 x = y = 0  # координаты
 num_blok_y = len(level[0])
 num_blok_x = len(level)

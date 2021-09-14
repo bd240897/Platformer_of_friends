@@ -21,28 +21,30 @@ class Platform(pygame.sprite.Sprite):
         self.image.fill(pygame.Color(PLATFORM_COLOR))
         self.rect = pygame.Rect(x, y, PLATFORM_WIDTH, PLATFORM_HEIGHT)
 
-bloks = pygame.sprite.Group()
+# cоздаим группы и добави туда объекты
+all_bloks = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 all_coins = pygame.sprite.Group()
 all_mobs = pygame.sprite.Group()
 
-player = Player(bloks, all_coins, all_mobs)
-#########################
-# cлучаная генерация позиция моба
-def random_mob_position():
-    i, j = (0, 0)
-    while not sum(level_digit[i][j]) > 0:
-        i = random.randint(1, num_blok_x-2)
-        j = random.randint(1, num_blok_y-2)
-    return level_digit[i][j]
-#########################
-for num_mob in range(1,4):
-    mob = Mob(*random_mob_position(), bloks)
-    all_mobs.add(mob)
-    all_sprites.add(mob)
+player = Player(all_bloks, all_coins, all_mobs)
+
+########### УБРАТЬ
+sword = Sword()
+sword.rect.center = player.rect.topleft
+sw_image = sword.image
+angle = 0
+###########
+
+all_sprites.add(sword)
+# player.get_sword(sword)
+
 
 all_sprites.add(player)
-
+for num_mob in range(1,4):
+    mob = Mob(*Mob.random_mob_position(), all_bloks)
+    all_mobs.add(mob)
+    all_sprites.add(mob)
 
 # рисование уровня
 x = y = 0  # координаты
@@ -50,7 +52,7 @@ for row in level:  # вся строка
     for col in row:  # каждый символ
         if col == "-":
             one_platform = Platform(x, y)
-            bloks.add(one_platform)
+            all_bloks.add(one_platform)
             all_sprites.add(one_platform)
         if col == "*":
             one_coin = Coins(x, y)
@@ -59,6 +61,8 @@ for row in level:  # вся строка
         x += PLATFORM_WIDTH  # блоки платформы ставятся на ширине блоков
     y += PLATFORM_HEIGHT  # то же самое и с высотой
     x = 0  # на каждой новой строчке начинаем с нуля
+
+
 
 
 # Цикл игры
@@ -75,7 +79,7 @@ while running:
 ##### ОБНОВЛЕНИЕ
     all_sprites.update()
 
-    # перемещение по Х
+    # перемещение
     keystate = pygame.key.get_pressed()
     if keystate[pygame.K_LEFT]:
         player.go_lef()
@@ -85,6 +89,13 @@ while running:
         player.go_jump()
     if keystate[pygame.K_DOWN]:
         player.go_down()
+        ########### УБРАТЬ
+        # player.make_sword()
+        angle += 1
+        angle = angle % 360
+        sword.image = pygame.transform.rotate(sw_image, angle)
+        sword.rect = sword.image.get_rect()
+        sword.rect.center = player.rect.topleft
 
     if event.type == pygame.KEYUP:
         if event.key == pygame.K_LEFT and player.speed_x < 0:

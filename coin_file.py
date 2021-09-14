@@ -8,15 +8,14 @@ class Coins(pygame.sprite.Sprite):
         self.image = pygame.Surface((SIZE_OF_COIN, SIZE_OF_COIN))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
         # поля персонажа
-        self.x = 0
-        self.y = 0
         self.speed_x = 0
         self.speed_y = 0
-        self.rect.center = (x, y)
-        self.length_way = 0
+        self.length_way = 0 # путь колебания коина
 
     def coins_up(self):
+        """Колебание коина вверх-вниз"""
         self.rect.y += self.speed_y
         self.length_way += self.speed_y
 
