@@ -87,31 +87,40 @@ class Player(pygame.sprite.Sprite):
         """НАверно стоит переместить метод сюда пока он ниже"""
         pass
 
-    # def get_sword(self, sword):
-    #     self.sword = sword
-    #
     def keep_sword(self, sword):
+        """Взять мечь"""
         self.sword = sword
         self.sw_image = self.sword.image
-        self.angle_sword = 0
-        self.sword.rect.center = self.rect.center
-    #
-    def make_sword(self):
-        now_sw_clock = pygame.time.get_ticks()
-        self.angle_sword = 45
-        self.angle_sword = self.angle_sword % 360
-        self.sword.image = pygame.transform.rotate(self.sw_image, self.angle_sword)
+        self.sword.image = pygame.transform.rotate(self.sword.image, -45)
+        self.sword.rect = self.sword.image.get_rect()
+        self.sword.rect.bottomright = self.rect.topleft
+        self.sword_flag_up = True
+
+    def up_sword(self):
+        """Поднять мечь"""
+        self.sword.image = pygame.transform.rotate(self.sword.orig_image, -45)
+        self.sword.rect = self.sword.image.get_rect()
+        self.sword.rect.bottomright = self.rect.topleft
+        self.sword_flag_up = True
+
+    def down_sword(self):
+        """Опустить мечь"""
+        self.sword.image = pygame.transform.rotate(self.sword.orig_image, +45)
         self.sword.rect = self.sword.image.get_rect()
         self.sword.rect.topright = self.rect.topleft
+        self.sword_flag_up = False
+
+    def update_sword_coord(self):
+        """Обновление положения меча на экране"""
+        if self.sword_flag_up:
+            self.sword.rect.bottomright = self.rect.topleft
+        else:
+            self.sword.rect.topright = self.rect.topleft
 
     def update(self):
         self.gravitation()
         self.collision_coins()
         self.collision_mobs()
-        # self.keep_sword()
-        self.sword.rect.topright = self.rect.topleft
-
-        print()
 
         self.rect.x += self.speed_x
         hits = pygame.sprite.spritecollide(self, self.bloks, False)
@@ -131,6 +140,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.top = hit.rect.bottom
             self.speed_y = 0
 
+        self.update_sword_coord()
 
 class Sword(pygame.sprite.Sprite):
     """ Класс для меча у персонажа"""
@@ -140,15 +150,6 @@ class Sword(pygame.sprite.Sprite):
         self.image.fill(RED)
         self.orig_image = self.image
         self.rect = self.image.get_rect()
-        # self.image = pygame.transform.rotate(self.image, -45)
-        # self.rect = self.image.get_rect()
-
-        # self.image = pygame.transform.rotate(self.image, 45)
-        # self.rect = self.image.get_rect()
-        # self.rect.topleft = (x, y)
 
     def update(self):
-        # self.image = pygame.transform.rotate(self.image, 1)
-        # self.rect = self.image.get_rect()
-        # self.rect.center = (x, y)
         pass

@@ -77,6 +77,7 @@ while running:
 
     # перемещение
     keystate = pygame.key.get_pressed()
+
     if keystate[pygame.K_LEFT]:
         player.go_lef()
     if keystate[pygame.K_RIGHT]:
@@ -85,13 +86,20 @@ while running:
         player.go_jump()
     if keystate[pygame.K_DOWN]:
         player.go_down()
-        player.make_sword()
+        # player.up_sword()
+
+
 
     if event.type == pygame.KEYUP:
         if event.key == pygame.K_LEFT and player.speed_x < 0:
             player.stop()
         if event.key == pygame.K_RIGHT and player.speed_x > 0:
             player.stop()
+
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+        player.down_sword()
+    if event.type == pygame.KEYUP and event.key == pygame.K_DOWN:
+        player.up_sword()
 
 ##### РЕНДЕРИНГ
     screen.fill(BLACK)
