@@ -31,13 +31,9 @@ player = Player(all_bloks, all_coins, all_mobs)
 
 ########### УБРАТЬ
 sword = Sword()
-sword.rect.center = player.rect.topleft
-sw_image = sword.image
-angle = 0
-###########
+player.keep_sword(sword)
 
 all_sprites.add(sword)
-# player.get_sword(sword)
 
 
 all_sprites.add(player)
@@ -89,13 +85,7 @@ while running:
         player.go_jump()
     if keystate[pygame.K_DOWN]:
         player.go_down()
-        ########### УБРАТЬ
-        # player.make_sword()
-        angle += 1
-        angle = angle % 360
-        sword.image = pygame.transform.rotate(sw_image, angle)
-        sword.rect = sword.image.get_rect()
-        sword.rect.center = player.rect.topleft
+        player.make_sword()
 
     if event.type == pygame.KEYUP:
         if event.key == pygame.K_LEFT and player.speed_x < 0:

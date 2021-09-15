@@ -90,19 +90,28 @@ class Player(pygame.sprite.Sprite):
     # def get_sword(self, sword):
     #     self.sword = sword
     #
-    # def keep_sword(self):
-    #     self.sword.rect.topleft = self.rect.center
+    def keep_sword(self, sword):
+        self.sword = sword
+        self.sw_image = self.sword.image
+        self.angle_sword = 0
+        self.sword.rect.center = self.rect.center
     #
-    # def make_sword(self):
-    #     self.sword.image = pygame.transform.rotate(self.image, 45)
-    #     self.sword.rect = self.image.get_rect()
-    #     self.sword.rect.topleft = self.rect.center
+    def make_sword(self):
+        now_sw_clock = pygame.time.get_ticks()
+        self.angle_sword = 45
+        self.angle_sword = self.angle_sword % 360
+        self.sword.image = pygame.transform.rotate(self.sw_image, self.angle_sword)
+        self.sword.rect = self.sword.image.get_rect()
+        self.sword.rect.topright = self.rect.topleft
 
     def update(self):
         self.gravitation()
         self.collision_coins()
         self.collision_mobs()
         # self.keep_sword()
+        self.sword.rect.topright = self.rect.topleft
+
+        print()
 
         self.rect.x += self.speed_x
         hits = pygame.sprite.spritecollide(self, self.bloks, False)
@@ -129,7 +138,11 @@ class Sword(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((40, 5), pygame.SRCALPHA)
         self.image.fill(RED)
+        self.orig_image = self.image
         self.rect = self.image.get_rect()
+        # self.image = pygame.transform.rotate(self.image, -45)
+        # self.rect = self.image.get_rect()
+
         # self.image = pygame.transform.rotate(self.image, 45)
         # self.rect = self.image.get_rect()
         # self.rect.topleft = (x, y)
