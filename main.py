@@ -33,7 +33,7 @@ def create_mobs():
 
 def create_sword(player):
     sword = Sword(player)
-    player.take_sword(sword)
+    player.create_sword(sword)
     all_sprites.add(sword)
 
 def create_platforms():
@@ -71,26 +71,27 @@ def handle_events():
                 player.stop()
             if event.key == pygame.K_RIGHT and player.speed_x > 0:
                 player.stop()
+
         # ивенты удара и доставания меча
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+            sword_side = 'left'
             if player.sword_exist:
                 player.remove_sword()
             else:
                 create_sword(player)
+                player.take_sword(sword_side)
+
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
+            sword_side = 'right'
+            if player.sword_exist:
+                player.remove_sword()
+            else:
+                create_sword(player)
+                player.take_sword(sword_side)
+
         if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
             player.make_sword()
 
-        # if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
-        #     sword_size = 'right'
-        # if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
-        #     sword_size = 'left'
-
-        #     if player.sword_exist:
-        #         player.remove_sword()
-        #     else:
-        #         create_sword(player)
-
-    # ивенты ЗАЖИМАНИЯ
     # ивенты движения
     keystate = pygame.key.get_pressed()
     if keystate[pygame.K_LEFT]:

@@ -99,29 +99,41 @@ class Player(pygame.sprite.Sprite):
         """НАверно стоит переместить метод сюда пока он ниже"""
         pass
 
-    def take_sword(self, sword):
-        """Взять мечь"""
+    def create_sword(self, sword):
         self.sword = sword
+
+    def take_sword(self, sword_side):
+        """Взять мечь"""
+        if sword_side == 'left':
+            self.sword.up_sword_onleft()
+        elif sword_side == 'right':
+            self.sword.up_sword_onright()
         self.sword_exist = True
+        self.sword_side = sword_side
+        self.sword.sword_size = sword_side
 
     def remove_sword(self):
         self.sword.kill()
         self.sword_exist = False
 
     def make_sword(self):
-        if self.sword_exist:
-            self.sword.down_sword()
+        if self.sword_exist and self.sword_side == 'left':
+            self.sword.down_sword_onleft()
+        elif self.sword_exist and self.sword_side == 'right':
+            self.sword.down_sword_onright()
 
     def update_sword_coord(self):
         """Обновление положения меча на экране"""
-        if self.sword_exist:
+        if self.sword_exist and self.sword_side == 'left':
             if self.sword.up_flag:
-                # self.sword.rect.bottomright = self.rect.topleft
                 self.sword.rect.bottomright = self.sword.add_to_tuple(self.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y)
-
             else:
-                # self.sword.rect.topright = self.rect.topleft
                 self.sword.rect.topright = self.sword.add_to_tuple(self.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y)
+        elif self.sword_exist and self.sword_side == 'right':
+            if self.sword.up_flag:
+                self.sword.rect.bottomleft = self.sword.add_to_tuple(self.rect.topright, -SWORD_SHIFT_X, SWORD_SHIFT_Y)
+            else:
+                self.sword.rect.topleft = self.sword.add_to_tuple(self.rect.topright, -SWORD_SHIFT_X, SWORD_SHIFT_Y)
 
     def update(self):
         self.gravitation()
