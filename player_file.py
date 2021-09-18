@@ -12,7 +12,7 @@ class Player(pygame.sprite.Sprite):
         # self.image = pygame.Surface((30, 40))
         # self.image.fill(RED)
         player_img = pygame.image.load(os.path.join(img_dir, "player_1.png")).convert()
-        player_img = pygame.transform.scale(player_img, (PLATFORM_WIDTH, int(PLATFORM_HEIGHT*1.5)))
+        player_img = pygame.transform.scale(player_img, (PLAYER_HEIGHT, PLAYER_WIDTH))
         player_img.set_colorkey(GRAY)
         self.image = player_img
 
@@ -106,7 +106,6 @@ class Player(pygame.sprite.Sprite):
         """Взять мечь"""
         self.sword.up_sword(sword_side)
         self.sword_exist = True
-        self.sword_side = sword_side
 
     def remove_sword(self):
         self.sword.kill()
@@ -114,20 +113,7 @@ class Player(pygame.sprite.Sprite):
 
     def make_sword(self):
         if self.sword_exist:
-            self.sword.down_sword(self.sword_side)
-
-    def update_sword_coord(self):
-        """Обновление положения меча на экране"""
-        if self.sword_exist and self.sword_side == 'left':
-            if self.sword.up_flag:
-                self.sword.rect.bottomright = self.sword.add_to_tuple(self.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y)
-            else:
-                self.sword.rect.topright = self.sword.add_to_tuple(self.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y)
-        elif self.sword_exist and self.sword_side == 'right':
-            if self.sword.up_flag:
-                self.sword.rect.bottomleft = self.sword.add_to_tuple(self.rect.topright, -SWORD_SHIFT_X, SWORD_SHIFT_Y)
-            else:
-                self.sword.rect.topleft = self.sword.add_to_tuple(self.rect.topright, -SWORD_SHIFT_X, SWORD_SHIFT_Y)
+            self.sword.down_sword()
 
     def update(self):
         self.gravitation()
@@ -153,5 +139,3 @@ class Player(pygame.sprite.Sprite):
             elif self.speed_y < 0:
                 self.rect.top = hit.rect.bottom
             self.speed_y = 0
-
-        self.update_sword_coord()

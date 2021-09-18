@@ -89,7 +89,7 @@ def handle_events():
                 create_sword(player)
                 player.take_sword(sword_side)
 
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             player.make_sword()
 
     # ивенты движения
@@ -123,7 +123,7 @@ while running:
     background_rect = background.get_rect()
     screen.blit(background, background_rect)
     all_sprites.draw(screen)
-   # После отрисовки всего, переворачиваем экран
+    # После отрисовки всего, переворачиваем экран
     pygame.display.flip()
 
 pygame.quit()

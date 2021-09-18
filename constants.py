@@ -40,14 +40,21 @@ level = [
     "-------------------------",
     "-------------------------"]
 
+# размер платформ
 PLATFORM_WIDTH = 32
 PLATFORM_HEIGHT = 32
 PLATFORM_COLOR = "#FF6262"
-
+# размер монет
 SIZE_OF_COIN = 10
+# размер мобов
 MOB_SIZE = PLATFORM_WIDTH
 
-# цифровая карта платформа
+# размер персонажа
+PLAYER_HEIGHT = PLATFORM_WIDTH
+PLAYER_WIDTH = int(PLATFORM_HEIGHT*1.5)
+
+
+# цифровая карта платформы
 x = y = 0  # координаты
 num_blok_y = len(level[0])
 num_blok_x = len(level)
@@ -68,3 +75,4 @@ img_dir = os.path.join(os.path.dirname(__file__), 'img')
 
 SWORD_SHIFT_X = 10
 SWORD_SHIFT_Y = 42
+

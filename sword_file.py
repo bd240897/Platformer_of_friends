@@ -38,65 +38,42 @@ class Sword(pygame.sprite.Sprite):
         self.up_flag = True
         self.down_time = 0
 
-    def down_sword(self, sword_side):
+    def down_sword(self):
         """Поднять мечь"""
-        self.sword_side = sword_side
         if self.sword_side == 'left':
             self.image = pygame.transform.rotate(self.orig_image, +45)
             self.rect = self.image.get_rect()
-            self.rect.topright = self.add_to_tuple(self.player.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y)
+            self.rect.topright = self.add_to_tuple(self.player.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y - PLAYER_HEIGHT/2)
         elif self.sword_side == 'right':
             self.image = pygame.transform.rotate(self.orig_image, +135)
             self.rect = self.image.get_rect()
-            self.rect.topleft = self.add_to_tuple(self.player.rect.topright, -SWORD_SHIFT_X, SWORD_SHIFT_Y)
+            self.rect.topleft = self.add_to_tuple(self.player.rect.topright, -SWORD_SHIFT_X, SWORD_SHIFT_Y - PLAYER_HEIGHT/2)
         self.up_flag = False
         self.down_time = 0
         self.down_time = pygame.time.get_ticks()
 
-    # def up_sword_onleft(self):
-    #     """Поднять мечь"""
-    #     self.image = pygame.transform.rotate(self.orig_image, -45)
-    #     self.rect = self.image.get_rect()
-    #     # self.rect.bottomright = self.player.rect.topleft
-    #     self.rect.bottomright = self.add_to_tuple(self.player.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y)
-    #     self.up_flag = True
-    #     self.down_time = pygame.time.get_ticks()
-
-    # def down_sword_onleft(self):
-    #     self.down_time = pygame.time.get_ticks()
-    #     """Опустить мечь"""
-    #     self.image = pygame.transform.rotate(self.orig_image, +45)
-    #     self.rect = self.image.get_rect()
-    #     self.rect.topright = self.add_to_tuple(self.player.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y)
-    #     self.up_flag = False
-    #     self.down_time = pygame.time.get_ticks()
-    #
-    # def down_sword_onright(self):
-    #     self.down_time = pygame.time.get_ticks()
-    #     """Опустить мечь"""
-    #     self.image = pygame.transform.rotate(self.orig_image, 135)
-    #     self.rect = self.image.get_rect()
-    #     self.rect.topleft = self.add_to_tuple(self.player.rect.topright, -SWORD_SHIFT_X, SWORD_SHIFT_Y)
-    #     self.up_flag = False
-    #     self.down_time = pygame.time.get_ticks()
-    #
-    # def up_sword_onright(self):
-    #     """Поднять мечь"""
-    #     self.image = pygame.transform.rotate(self.orig_image, -135)
-    #     self.rect = self.image.get_rect()
-    #     self.rect.bottomleft = self.add_to_tuple(self.player.rect.topright, -SWORD_SHIFT_X, SWORD_SHIFT_Y)
-    #     self.up_flag = True
-    #     self.down_time = 0
-    #
+    def update_sword_coord(self):
+        """Обновление положения меча на экране"""
+        if self.player.sword_exist and self.sword_side == 'left':
+            if self.up_flag:
+                self.rect.bottomright = self.add_to_tuple(self.player.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y)
+            else:
+                self.rect.topright = self.add_to_tuple(self.player.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y - PLAYER_HEIGHT/2)
+        elif self.player.sword_exist and self.sword_side == 'right':
+            if self.up_flag:
+                self.rect.bottomleft = self.add_to_tuple(self.player.rect.topright, -SWORD_SHIFT_X, SWORD_SHIFT_Y)
+            else:
+                self.rect.topleft = self.add_to_tuple(self.player.rect.topright, -SWORD_SHIFT_X, SWORD_SHIFT_Y - PLAYER_HEIGHT/2)
 
     def update(self):
-        pass
         if self.up_flag:
             pass
         elif not self.up_flag:
             curr_time = pygame.time.get_ticks()
             if curr_time - self.down_time > FPS * 3:
                 self.up_sword(self.sword_side)
+
+        self.update_sword_coord()
 
     @staticmethod
     def add_to_tuple(mass, x_add, y_add):
