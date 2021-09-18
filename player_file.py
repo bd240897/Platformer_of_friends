@@ -1,6 +1,6 @@
 import pygame
 from constants import *
-
+import time
 
 class Player(pygame.sprite.Sprite):
     """ Класс для описания игрока и его действий """
@@ -95,36 +95,16 @@ class Player(pygame.sprite.Sprite):
     def take_sword(self, sword):
         """Взять мечь"""
         self.sword = sword
-        self.sw_image = self.sword.image
-        self.sword.image = pygame.transform.rotate(self.sword.image, -45)
-        self.sword.rect = self.sword.image.get_rect()
-        self.sword.rect.bottomright = self.rect.topleft
-        self.sword_flag_up = True
         self.sword_exist = True
 
     def remove_sword(self):
         self.sword.kill()
         self.sword_exist = False
 
-    def up_sword(self):
-        """Поднять мечь"""
-        self.sword.image = pygame.transform.rotate(self.sword.orig_image, -45)
-        self.sword.rect = self.sword.image.get_rect()
-        self.sword.rect.bottomright = self.rect.topleft
-        self.sword_flag_up = True
-
-    def down_sword(self):
-        """Опустить мечь"""
-        self.sword.image = pygame.transform.rotate(self.sword.orig_image, +45)
-        self.sword.rect = self.sword.image.get_rect()
-        self.sword.rect.topright = self.rect.topleft
-        self.sword_flag_up = False
-        if self.sword_exist: self.collision_sword_mobs()
-
     def update_sword_coord(self):
         """Обновление положения меча на экране"""
         if self.sword_exist:
-            if self.sword_flag_up:
+            if self.sword.up_flag:
                 self.sword.rect.bottomright = self.rect.topleft
             else:
                 self.sword.rect.topright = self.rect.topleft
@@ -133,6 +113,8 @@ class Player(pygame.sprite.Sprite):
         self.gravitation()
         self.collision_coins()
         self.collision_player_and_mobs()
+        # есть мечь опщен проверять колизию
+        if not self.sword.up_flag: self.collision_sword_mobs()
 
         self.rect.x += self.speed_x
         hits = pygame.sprite.spritecollide(self, self.bloks, False)
@@ -156,9 +138,46 @@ class Player(pygame.sprite.Sprite):
 
 class Sword(pygame.sprite.Sprite):
     """ Класс для меча у персонажа"""
-    def __init__(self):
+    def __init__(self, player):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((40, 5), pygame.SRCALPHA)
         self.image.fill(RED)
         self.orig_image = self.image
+        self.image = pygame.transform.rotate(self.image, -45)
         self.rect = self.image.get_rect()
+
+        # мечь спавнится в правом угла перса
+        self.player = player
+        self.rect.bottomright = self.player.rect.topleft
+
+        # атрибуты
+        self.up_flag = True
+
+    def up_sword(self):
+        """Поднять мечь"""
+        self.image = pygame.transform.rotate(self.orig_image, -45)
+        self.rect = self.image.get_rect()
+        self.rect.bottomright = self.player.rect.topleft
+        self.up_flag = True
+        self.down_time = 0
+
+    def down_sword(self):
+        self.down_time = pygame.time.get_ticks()
+        """Опустить мечь"""
+        self.image = pygame.transform.rotate(self.orig_image, +45)
+        self.rect = self.image.get_rect()
+        self.rect.topright = self.player.rect.topleft
+        self.up_flag = False
+        self.down_time = pygame.time.get_ticks()
+
+    def make_sword(self):
+        self.down_sword()
+
+    def update(self):
+        if self.up_flag:
+            pass
+        elif not self.up_flag:
+            curr_time = pygame.time.get_ticks()
+            if curr_time - self.down_time > FPS*3:
+                self.up_sword()
+                
