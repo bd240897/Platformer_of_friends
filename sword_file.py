@@ -40,10 +40,26 @@ class Sword(pygame.sprite.Sprite):
         """Опустить мечь"""
         self.image = pygame.transform.rotate(self.orig_image, +45)
         self.rect = self.image.get_rect()
-        # self.rect.topright = self.player.rect.topleft
         self.rect.topright = self.add_to_tuple(self.player.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y)
         self.up_flag = False
         self.down_time = pygame.time.get_ticks()
+
+    def down_sword_onleft(self):
+        self.down_time = pygame.time.get_ticks()
+        """Опустить мечь"""
+        self.image = pygame.transform.rotate(self.orig_image, 135)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = self.add_to_tuple(self.player.rect.topright, SWORD_SHIFT_X, SWORD_SHIFT_Y)
+        self.up_flag = False
+        self.down_time = pygame.time.get_ticks()
+
+    def up_sword_onleft(self):
+        """Поднять мечь"""
+        self.image = pygame.transform.rotate(self.orig_image, -135)
+        self.rect = self.image.get_rect()
+        self.rect.bottomleft = self.add_to_tuple(self.player.rect.topright, SWORD_SHIFT_X, SWORD_SHIFT_Y)
+        self.up_flag = True
+        self.down_time = 0
 
     def update(self):
         if self.up_flag:

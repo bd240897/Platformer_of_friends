@@ -79,6 +79,17 @@ def handle_events():
                 create_sword(player)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
             player.make_sword()
+
+        # if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
+        #     sword_size = 'right'
+        # if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+        #     sword_size = 'left'
+
+        #     if player.sword_exist:
+        #         player.remove_sword()
+        #     else:
+        #         create_sword(player)
+
     # ивенты ЗАЖИМАНИЯ
     # ивенты движения
     keystate = pygame.key.get_pressed()
