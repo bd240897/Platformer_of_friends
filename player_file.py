@@ -104,23 +104,17 @@ class Player(pygame.sprite.Sprite):
 
     def take_sword(self, sword_side):
         """Взять мечь"""
-        if sword_side == 'left':
-            self.sword.up_sword_onleft()
-        elif sword_side == 'right':
-            self.sword.up_sword_onright()
+        self.sword.up_sword(sword_side)
         self.sword_exist = True
         self.sword_side = sword_side
-        self.sword.sword_size = sword_side
 
     def remove_sword(self):
         self.sword.kill()
         self.sword_exist = False
 
     def make_sword(self):
-        if self.sword_exist and self.sword_side == 'left':
-            self.sword.down_sword_onleft()
-        elif self.sword_exist and self.sword_side == 'right':
-            self.sword.down_sword_onright()
+        if self.sword_exist:
+            self.sword.down_sword(self.sword_side)
 
     def update_sword_coord(self):
         """Обновление положения меча на экране"""
