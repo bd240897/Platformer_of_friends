@@ -1,6 +1,5 @@
 import pygame
 from constants import *
-# from main import *
 import random
 
 class Mob(pygame.sprite.Sprite):

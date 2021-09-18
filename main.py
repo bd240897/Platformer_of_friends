@@ -1,12 +1,11 @@
 # Pygame шаблон - скелет для нового проекта Pygame
 import pygame
-import random
-from player_file import *
-from constants import *
-from coin_file import *
-from mobs_file import *
+from player_file import Player
+from coin_file import Coins
+from mobs_file import Mob
 from platform_file import Platform
-import random
+from sword_file import Sword
+from constants import *
 
 # Создаем игру и окно
 pygame.init()
@@ -58,10 +57,9 @@ def create_objects():
     create_platforms()
     create_player()
     create_mobs()
-    create_sword(player)
 
 def handle_events():
-    # ивент выхода
+    # ивенты НАЖАТИЙ
     for event in pygame.event.get():
         # выход из программы
         if event.type == pygame.QUIT:
@@ -73,15 +71,15 @@ def handle_events():
                 player.stop()
             if event.key == pygame.K_RIGHT and player.speed_x > 0:
                 player.stop()
-        # ивенты удара
+        # ивенты удара и доставания меча
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            if player.sword_exist:
+                player.remove_sword()
+            else:
+                create_sword(player)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-            player.sword.make_sword()
-
-        # if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-        #     player.sword.down_sword()
-        # if event.type == pygame.KEYUP and event.key == pygame.K_DOWN:
-        #     player.sword.up_sword()
-
+            player.make_sword()
+    # ивенты ЗАЖИМАНИЯ
     # ивенты движения
     keystate = pygame.key.get_pressed()
     if keystate[pygame.K_LEFT]:
@@ -92,12 +90,6 @@ def handle_events():
         player.go_jump()
     if keystate[pygame.K_DOWN]:
         player.go_down()
-        # player.up_sword()
-    if keystate[pygame.K_SPACE]:
-        if player.sword_exist:
-            player.remove_sword()
-        # else:
-        #     create_sword(player)
 
 # Цикл игры
 create_objects()
