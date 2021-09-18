@@ -106,9 +106,12 @@ while running:
 
     # РЕНДЕРИНГ
     screen.fill(BLACK)
+    background = pygame.image.load(os.path.join(img_dir, "plan_1.png")).convert()
+    background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+    background_rect = background.get_rect()
+    screen.blit(background, background_rect)
     all_sprites.draw(screen)
-
-    # После отрисовки всего, переворачиваем экран
+   # После отрисовки всего, переворачиваем экран
     pygame.display.flip()
 
 pygame.quit()

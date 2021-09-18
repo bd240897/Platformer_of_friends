@@ -2,14 +2,20 @@ import pygame
 from constants import *
 import time
 from sword_file import Sword
+import os
 
 class Player(pygame.sprite.Sprite):
     """ Класс для описания игрока и его действий """
     def __init__(self, bloks, coins, mobs):
         pygame.sprite.Sprite.__init__(self)
-        # отрисуем персонажа
-        self.image = pygame.Surface((30, 40))
-        self.image.fill(RED)
+        # # отрисуем персонажа
+        # self.image = pygame.Surface((30, 40))
+        # self.image.fill(RED)
+        player_img = pygame.image.load(os.path.join(img_dir, "player_1.png")).convert()
+        player_img = pygame.transform.scale(player_img, (PLATFORM_WIDTH, int(PLATFORM_HEIGHT*1.5)))
+        player_img.set_colorkey(GRAY)
+        self.image = player_img
+
         self.rect = self.image.get_rect()
 
         # поля персонажа
@@ -110,9 +116,12 @@ class Player(pygame.sprite.Sprite):
         """Обновление положения меча на экране"""
         if self.sword_exist:
             if self.sword.up_flag:
-                self.sword.rect.bottomright = self.rect.topleft
+                # self.sword.rect.bottomright = self.rect.topleft
+                self.sword.rect.bottomright = self.sword.add_to_tuple(self.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y)
+
             else:
-                self.sword.rect.topright = self.rect.topleft
+                # self.sword.rect.topright = self.rect.topleft
+                self.sword.rect.topright = self.sword.add_to_tuple(self.rect.topleft, SWORD_SHIFT_X, SWORD_SHIFT_Y)
 
     def update(self):
         self.gravitation()

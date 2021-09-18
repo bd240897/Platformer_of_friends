@@ -1,4 +1,6 @@
 import numpy as np
+import os
+import pygame
 
 WIDTH = 800
 HEIGHT = 680
@@ -11,6 +13,8 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+PURPUR = (152, 0, 136)
+GRAY = (230, 230, 230)
 
 # уровень
 level = [
@@ -33,6 +37,7 @@ level = [
     "-                   --  -",
     "-                       -",
     "- *                  *  -",
+    "-------------------------",
     "-------------------------"]
 
 PLATFORM_WIDTH = 32
@@ -59,3 +64,7 @@ for i, row in enumerate(level):  # вся строка
     x = 0  # на каждой новой строчке начинаем с нуля
 
 
+img_dir = os.path.join(os.path.dirname(__file__), 'img')
+
+SWORD_SHIFT_X = 10
+SWORD_SHIFT_Y = 42

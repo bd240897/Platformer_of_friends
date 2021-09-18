@@ -6,10 +6,15 @@ class Mob(pygame.sprite.Sprite):
     def __init__(self, x, y, bloks):
         pygame.sprite.Sprite.__init__(self)
         # отрисуем персонажа
-        self.image = pygame.Surface((PLATFORM_WIDTH, PLATFORM_HEIGHT))
-        self.image.fill(GREEN)
+        # self.image = pygame.Surface((PLATFORM_WIDTH, PLATFORM_HEIGHT))
+        # self.image.fill(GREEN)
+        mob_img = pygame.image.load(os.path.join(img_dir, "germ_pearson_2.png")).convert()
+        mob_img = pygame.transform.scale(mob_img, (PLATFORM_WIDTH, PLATFORM_HEIGHT*2))
+        mob_img.set_colorkey(PURPUR)
+        self.image = mob_img
+
         self.rect = self.image.get_rect()
-        self.rect.center = (x - PLATFORM_WIDTH/2, y - PLATFORM_HEIGHT/2)
+        self.rect.center = (x - PLATFORM_WIDTH/2, y - PLATFORM_HEIGHT*2/2)
         # поля персонажа
         self.speed_x = 1
         self.speed_y = 0

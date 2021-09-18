@@ -5,8 +5,14 @@ from constants import *
 class Coins(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((SIZE_OF_COIN, SIZE_OF_COIN))
-        self.image.fill(BLUE)
+        # self.image = pygame.Surface((SIZE_OF_COIN, SIZE_OF_COIN))
+        # self.image.fill(BLUE)
+        coin_img = pygame.image.load(os.path.join(img_dir, "coin_1.png")).convert()
+        coin_img = pygame.transform.scale(coin_img, (SIZE_OF_COIN, SIZE_OF_COIN))
+        coin_img.set_colorkey(WHITE)
+        self.image = coin_img
+
+
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         # поля персонажа
