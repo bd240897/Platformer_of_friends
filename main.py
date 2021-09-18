@@ -34,7 +34,7 @@ def create_mobs():
 
 def create_sword(player):
     sword = Sword()
-    player.keep_sword(sword)
+    player.take_sword(sword)
     all_sprites.add(sword)
 
 def create_platforms():
@@ -60,27 +60,27 @@ def create_objects():
     create_mobs()
     create_sword(player)
 
-create_objects()
-
-# Цикл игры
-running = True
-while running:
-    # Держим цикл на правильной скорости
-    clock.tick(FPS)
-    # Ввод процесса (события)
-
-
+def handle_events():
+    # ивент выхода
     for event in pygame.event.get():
-        # check for closing window
+        # выход из программы
         if event.type == pygame.QUIT:
+            global running
             running = False
+        # ивенты движения (остановка на всякий случай)
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT and player.speed_x < 0:
+                player.stop()
+            if event.key == pygame.K_RIGHT and player.speed_x > 0:
+                player.stop()
+        # ивенты удара
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+            player.down_sword()
+        if event.type == pygame.KEYUP and event.key == pygame.K_DOWN:
+            player.up_sword()
 
-##### ОБНОВЛЕНИЕ
-    all_sprites.update()
-
-    # перемещение
+    # ивенты движения
     keystate = pygame.key.get_pressed()
-
     if keystate[pygame.K_LEFT]:
         player.go_lef()
     if keystate[pygame.K_RIGHT]:
@@ -90,23 +90,26 @@ while running:
     if keystate[pygame.K_DOWN]:
         player.go_down()
         # player.up_sword()
+    if keystate[pygame.K_SPACE]:
+        player.remove_sword()
 
+# Цикл игры
+create_objects()
+running = True
+while running:
+    # Держим цикл на правильной скорости
+    clock.tick(FPS)
 
+    # Ввод процесса (события)
+    handle_events()
 
-    if event.type == pygame.KEYUP:
-        if event.key == pygame.K_LEFT and player.speed_x < 0:
-            player.stop()
-        if event.key == pygame.K_RIGHT and player.speed_x > 0:
-            player.stop()
+    # ОБНОВЛЕНИЕ
+    all_sprites.update()
 
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-        player.down_sword()
-    if event.type == pygame.KEYUP and event.key == pygame.K_DOWN:
-        player.up_sword()
-
-##### РЕНДЕРИНГ
+    # РЕНДЕРИНГ
     screen.fill(BLACK)
     all_sprites.draw(screen)
+
     # После отрисовки всего, переворачиваем экран
     pygame.display.flip()
 

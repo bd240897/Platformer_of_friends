@@ -27,6 +27,7 @@ class Player(pygame.sprite.Sprite):
         self.bloks = bloks
         self.coins = coins
         self.mobs = mobs
+        self.sword_exist = False
 
     def go_lef(self):
         """Шаг влево"""
@@ -66,11 +67,15 @@ class Player(pygame.sprite.Sprite):
             self.selected_coins += 1
             print(self.selected_coins)
 
-    def collision_mobs(self):
-        """Взаиодействие с врагами"""
-        hits = pygame.sprite.spritecollide(self, self.mobs, False)
+    def collision_sword_mobs(self):
+        """Взаиодействие меча с врагами с врагами"""
+        hits = pygame.sprite.spritecollide(self.sword, self.mobs, False)
         for hit in hits:
             hit.kill()
+
+    def collision_player_and_mobs(self):
+        """Взаиодействие с врагами"""
+        pass
 
     def gravitation(self):
         """Работа гравитации"""
@@ -87,7 +92,7 @@ class Player(pygame.sprite.Sprite):
         """НАверно стоит переместить метод сюда пока он ниже"""
         pass
 
-    def keep_sword(self, sword):
+    def take_sword(self, sword):
         """Взять мечь"""
         self.sword = sword
         self.sw_image = self.sword.image
@@ -95,6 +100,11 @@ class Player(pygame.sprite.Sprite):
         self.sword.rect = self.sword.image.get_rect()
         self.sword.rect.bottomright = self.rect.topleft
         self.sword_flag_up = True
+        self.sword_exist = True
+
+    def remove_sword(self):
+        self.sword.kill()
+        self.sword_exist = False
 
     def up_sword(self):
         """Поднять мечь"""
@@ -109,18 +119,20 @@ class Player(pygame.sprite.Sprite):
         self.sword.rect = self.sword.image.get_rect()
         self.sword.rect.topright = self.rect.topleft
         self.sword_flag_up = False
+        if self.sword_exist: self.collision_sword_mobs()
 
     def update_sword_coord(self):
         """Обновление положения меча на экране"""
-        if self.sword_flag_up:
-            self.sword.rect.bottomright = self.rect.topleft
-        else:
-            self.sword.rect.topright = self.rect.topleft
+        if self.sword_exist:
+            if self.sword_flag_up:
+                self.sword.rect.bottomright = self.rect.topleft
+            else:
+                self.sword.rect.topright = self.rect.topleft
 
     def update(self):
         self.gravitation()
         self.collision_coins()
-        self.collision_mobs()
+        self.collision_player_and_mobs()
 
         self.rect.x += self.speed_x
         hits = pygame.sprite.spritecollide(self, self.bloks, False)
@@ -150,6 +162,3 @@ class Sword(pygame.sprite.Sprite):
         self.image.fill(RED)
         self.orig_image = self.image
         self.rect = self.image.get_rect()
-
-    def update(self):
-        pass
