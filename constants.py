@@ -2,8 +2,14 @@ import numpy as np
 import os
 import pygame
 
-WIDTH = 800
-HEIGHT = 680
+# размер платформ
+PLATFORM_WIDTH = 32
+PLATFORM_HEIGHT = 32
+PLATFORM_COLOR = "#FF6262"
+
+WIDTH_WINDOW = PLATFORM_WIDTH*25
+HEIGHT_WINDOW = PLATFORM_HEIGHT*21
+
 FPS = 30
 GRAVITY = 4
 
@@ -40,10 +46,32 @@ level = [
     "-------------------------",
     "-------------------------"]
 
-# размер платформ
-PLATFORM_WIDTH = 32
-PLATFORM_HEIGHT = 32
-PLATFORM_COLOR = "#FF6262"
+level = [
+    "---------------------------------",
+    "-                               -",
+    "-                               -",
+    "-                               -",
+    "-            --                 -",
+    "-                               -",
+    "--                              -",
+    "-                               -",
+    "-                   ---         -",
+    "-                               -",
+    "-                               -",
+    "-      ---                      -",
+    "-    *      *          -        -",
+    "-   --- --------                -",
+    "-                               -",
+    "-                -   *          -",
+    "-                   --          -",
+    "-                               -",
+    "- *                  *          -",
+    "---------------------------------",
+    "---------------------------------"]
+TOTAL_LEVEL_WEIGHT = len(level[0]) * PLATFORM_WIDTH  # Высчитываем фактическую ширину уровня
+TOTAL_LEVEL_HEIGHT = len(level) * PLATFORM_HEIGHT  # высоту
+
+
 # размер монет
 SIZE_OF_COIN = 10
 # размер мобов

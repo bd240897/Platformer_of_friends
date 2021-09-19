@@ -13,3 +13,5 @@ class Platform(pygame.sprite.Sprite):
         self.image = ground_img
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
+        self.orig_rect = self.rect.copy()
+

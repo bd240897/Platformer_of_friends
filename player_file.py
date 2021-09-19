@@ -23,9 +23,11 @@ class Player(pygame.sprite.Sprite):
         self.speed_y = 0
         self.onGround = False # флаг - стоит ли персонаж не земле
 
+
         # точка спавна перса
-        self.rect.centerx = WIDTH / 2 # базовое расположение
-        self.rect.bottom = HEIGHT - 50 - 2*PLATFORM_HEIGHT
+        self.rect.centerx = WIDTH_WINDOW / 2 # базовое расположение
+        self.rect.bottom = HEIGHT_WINDOW - 50 - 2*PLATFORM_HEIGHT
+        self.orig_coord = self.rect.center
 
         # cчетчик собраных монет
         self.selected_coins = 0
@@ -139,3 +141,4 @@ class Player(pygame.sprite.Sprite):
             elif self.speed_y < 0:
                 self.rect.top = hit.rect.bottom
             self.speed_y = 0
+
