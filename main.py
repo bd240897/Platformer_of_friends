@@ -6,6 +6,7 @@ from mobs_file import Mob
 from platform_file import Platform
 from sword_file import Sword
 from constants import *
+from menu import Menu
 
 # Создаем игру и окно
 pygame.init()
@@ -93,6 +94,11 @@ def handle_events():
         if event.type == pygame.QUIT:
             global running
             running = False
+
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+            m = Menu()
+            m.draw(screen)
+
         # ивенты движения (остановка на всякий случай)
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT and player.speed_x < 0:
