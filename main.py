@@ -7,6 +7,7 @@ from platform_file import Platform
 from sword_file import Sword
 from constants import *
 from menu import Menu
+from menu import Menu
 
 # Создаем игру и окно
 pygame.init()
@@ -96,8 +97,11 @@ def handle_events():
             running = False
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+            # m = Menu()
+            # m.run_menu(screen)
             m = Menu()
-            m.draw(screen)
+            m.run_menu(screen)
+
 
         # ивенты движения (остановка на всякий случай)
         if event.type == pygame.KEYUP:
