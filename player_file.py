@@ -29,14 +29,22 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = HEIGHT_WINDOW - 50 - 2*PLATFORM_HEIGHT
         self.orig_coord = self.rect.center
 
-        # cчетчик собраных монет
-        self.selected_coins = 0
 
         # взаиодействие с другими объектами
         self.bloks = bloks
         self.coins = coins
         self.mobs = mobs
+
+        # очки персонажа
         self.sword_exist = None
+        self.healf = 100
+        self.selected_coins = 0 # cчетчик собраных монет
+        self.time_player_and_mobs = 0
+
+        # игра
+        self.count_kill_mobs = 0
+        self.win_game = False
+        self.lose_game = False
 
     def go_lef(self):
         """Шаг влево"""
@@ -76,15 +84,51 @@ class Player(pygame.sprite.Sprite):
             self.selected_coins += 1
             print(self.selected_coins)
 
-    def collision_sword_mobs(self):
+    def collision_sword_and_mobs(self):
         """Взаиодействие меча с врагами с врагами"""
         hits = pygame.sprite.spritecollide(self.sword, self.mobs, False)
         for hit in hits:
             hit.kill()
+            self.count_kill_mobs += 1
+            self.selected_coins += 2
+
+        if COUNT_MOBS == self.count_kill_mobs:
+            self.win_game = True
+
 
     def collision_player_and_mobs(self):
         """Взаиодействие с врагами"""
-        pass
+        hits = pygame.sprite.spritecollide(self, self.mobs, False)
+        curr_time = pygame.time.get_ticks()
+        if self.time_player_and_mobs == 0:
+            for hit in hits:
+                self.time_player_and_mobs = pygame.time.get_ticks()
+                self.healf -= 10
+        elif curr_time - self.time_player_and_mobs > 1000:
+            for hit in hits:
+                self.time_player_and_mobs = pygame.time.get_ticks()
+                self.healf -= 10
+        if self.healf == 0 or self.healf < 0:
+            self.lose_game = True
+
+    def draw_healf(self, screen):
+        # шрифт
+        font_name = pygame.font.match_font('arial')
+        size = PLATFORM_HEIGHT
+        font = pygame.font.Font(font_name, size)
+        # здоровье
+        text_healf = 'healf: ' + str(self.healf)
+        image_healf = font.render(text_healf, True, WHITE)
+        # очки
+        text_points = 'point: ' + str(self.selected_coins)
+        image_pints = font.render(text_points, True, WHITE)
+        # прямоугольник
+        image_rect = pygame.Surface((PLATFORM_WIDTH*4+PLATFORM_HEIGHT*0.1, PLATFORM_HEIGHT*2+PLATFORM_HEIGHT*0.2))
+        image_rect.fill(BLACK)
+        screen.blit(image_rect, (0,0))
+        # рендер текста
+        screen.blit(image_healf, (PLATFORM_WIDTH/3,0))
+        screen.blit(image_pints, (PLATFORM_WIDTH/3, PLATFORM_HEIGHT))
 
     def gravitation(self):
         """Работа гравитации"""
@@ -122,7 +166,7 @@ class Player(pygame.sprite.Sprite):
         self.collision_coins()
         self.collision_player_and_mobs()
         # есть мечь взять и опщен проверять колизию
-        if self.sword_exist and not self.sword.up_flag: self.collision_sword_mobs()
+        if self.sword_exist and not self.sword.up_flag: self.collision_sword_and_mobs()
 
         self.rect.x += self.speed_x
         hits = pygame.sprite.spritecollide(self, self.bloks, False)
@@ -141,4 +185,3 @@ class Player(pygame.sprite.Sprite):
             elif self.speed_y < 0:
                 self.rect.top = hit.rect.bottom
             self.speed_y = 0
-

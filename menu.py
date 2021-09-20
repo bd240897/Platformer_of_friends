@@ -47,7 +47,7 @@ class Menu(pygame.sprite.Sprite):
     def run_end_game(self, screen, status):
         self.screen = screen
         self.__init__()
-        if status == 'end_game':
+        if status == 'lose_game':
             self.create_begin_screen(self.GAME_OVER_TEXT)
         elif status == 'win_game':
             self.create_begin_screen(self.WIN_TEXT)

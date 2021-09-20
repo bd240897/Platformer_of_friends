@@ -107,3 +107,5 @@ SWORD_SHIFT_Y = 42
 WAS_START_SCREEN = False
 
 BACKGROUND = pygame.image.load(os.path.join(img_dir, "plan_1.png"))
+
+COUNT_MOBS = 3

@@ -54,7 +54,7 @@ def create_player():
     all_sprites.add(player)
 
 def create_mobs():
-    for num_mob in range(1,4):
+    for num_mob in range(1, COUNT_MOBS+1):
         mob = Mob(*Mob.random_mob_position(), all_bloks)
         all_mobs.add(mob)
         all_sprites.add(mob)
@@ -87,6 +87,7 @@ def create_objects():
     create_mobs()
 
 def handle_events():
+    global m
     m = Menu()
     global WAS_START_SCREEN
     if not WAS_START_SCREEN:
@@ -145,6 +146,14 @@ def handle_events():
     if keystate[pygame.K_DOWN]:
         player.go_down()
 
+def handler_end_game(m):
+    if player.win_game:
+        m.run_end_game(screen, 'win_game')
+        print('outside_you_win')
+    if player.lose_game:
+        m.run_end_game(screen, 'lose_game')
+        print('outside_you_lose')
+
 # Цикл игры
 camera = Camera(camera_configure, TOTAL_LEVEL_WEIGHT, TOTAL_LEVEL_HEIGHT)
 create_objects()
@@ -168,6 +177,9 @@ while running:
         screen.blit(sprites.image, camera.apply(sprites))
         sprites.update()
 
+    # отрисуем здоровье
+    player.draw_healf(screen)
+
     # all_sprites.update()
 
     # РЕНДЕРИНГ
@@ -175,4 +187,5 @@ while running:
     # После отрисовки всего, переворачиваем экран
     pygame.display.flip()
 
+    handler_end_game(m)
 pygame.quit()
