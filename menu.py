@@ -32,19 +32,48 @@ class Menu(pygame.sprite.Sprite):
         self.update(self.screen)
         self.handler_help_events()
 
+    def run_begin_screen(self, screen):
+        self.screen = screen
+        self.__init__()
+        self.create_begin_screen(self.BEGIN_TEXT)
+        background = BACKGROUND.convert()
+        background = pygame.transform.scale(BACKGROUND, (WIDTH_WINDOW, HEIGHT_WINDOW))
+        background_rect = background.get_rect()
+        self.image.blit(background, background_rect)
+        self.draw()
+        self.update(self.screen)
+        self.handler_begin_screen_events()
+
+    def run_end_game(self, screen, status):
+        self.screen = screen
+        self.__init__()
+        if status == 'end_game':
+            self.create_begin_screen(self.GAME_OVER_TEXT)
+        elif status == 'win_game':
+            self.create_begin_screen(self.WIN_TEXT)
+        self.draw()
+        self.update(self.screen)
+        self.handler_begin_screen_events()
+
+    def run_you_win(self):
+        pass
+
+    def run_you_lost(self):
+        pass
+##################################################### входные данные ###############################3
     button_1 = [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 5, u"1. Продолжить", WHITE, quit]
     button_2 = [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 9, u"2. Справка", WHITE, run_help]
     button_3 = [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 13, u"3. Выйти из игры", WHITE, continue_loop]
     LIST_BUTTONS = [button_1, button_2, button_3]
 
     HELP = [u'CПРАВКА',
-              u'< - движение влево',
-              u'> - движение вправо',
-              u'^ - прыжок',
+              u'← - движение влево',
+              u'→ - движение вправо',
+              u'↑ - прыжок',
               u'Q - достать мечь слева',
               u'P - достать мечь справа',
               u'SPACE - удар',
-              u'НАЗАД']
+              u'ВЕРНУТЬСЯ НАЗАД']
 
     LIST_HELP = []
     for i, support in enumerate(HELP):
@@ -58,7 +87,15 @@ class Menu(pygame.sprite.Sprite):
         one_support = [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * (2 + i*2), support, color, click_handler]
         LIST_HELP.append(one_support)
 
+    BEGIN_TEXT = [
+    [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 7, u"ИГРА: \"No NAME GAME\"", BLUE, lambda x: None, 70],
+    [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 11, u"Написал: Борисов Д.А.", WHITE, lambda x: None, 50],
+    [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 16, u"Нажмите любю кнопку для продолжения", RED, lambda x: None, 40]]
 
+    WIN_TEXT = [[PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 9, u'YOU WIN', RED, lambda x: None, 90]]
+    GAME_OVER_TEXT = [[PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 9, u'GAME OVER', RED, lambda x: None, 90]]
+
+##############################################################
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((TOTAL_LEVEL_WEIGHT, TOTAL_LEVEL_HEIGHT))
@@ -84,6 +121,17 @@ class Menu(pygame.sprite.Sprite):
             coord = (button[0], button[1])
             text = button[2]
             size = 50
+            color = button[3]
+            handler_click = button[4]
+            button = Button(text, size, *coord, color, handler_click)
+            self.objects.append(button)
+
+    def create_begin_screen(self, LIST_TEXT):
+        self.objects.clear()
+        for button in LIST_TEXT:
+            coord = (button[0], button[1])
+            text = button[2]
+            size = button[5]
             color = button[3]
             handler_click = button[4]
             button = Button(text, size, *coord, color, handler_click)
@@ -150,6 +198,15 @@ class Menu(pygame.sprite.Sprite):
                         self.update(self.screen)
                         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                             active_button.click_handler(self)
+
+    def handler_begin_screen_events(self):
+        while self.done:
+            mouse = pygame.mouse.get_pos()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+                if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                    self.done = False
 
 class Button(pygame.sprite.Sprite):
     def __init__(self, text, size, x, y, color, click_handler):

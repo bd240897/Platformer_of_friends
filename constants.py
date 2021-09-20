@@ -104,3 +104,6 @@ img_dir = os.path.join(os.path.dirname(__file__), 'img')
 SWORD_SHIFT_X = 10
 SWORD_SHIFT_Y = 42
 
+WAS_START_SCREEN = False
+
+BACKGROUND = pygame.image.load(os.path.join(img_dir, "plan_1.png"))

@@ -22,8 +22,6 @@ all_sprites = pygame.sprite.Group()
 all_coins = pygame.sprite.Group()
 all_mobs = pygame.sprite.Group()
 
-CAMER_SIZE = (100,100)
-
 class Camera(object):
     def __init__(self, camera_func, width_level, height_level):
         self.camera_func = camera_func
@@ -89,6 +87,12 @@ def create_objects():
     create_mobs()
 
 def handle_events():
+    m = Menu()
+    global WAS_START_SCREEN
+    if not WAS_START_SCREEN:
+        m.run_begin_screen(screen)
+        WAS_START_SCREEN = True
+
     # ивенты НАЖАТИЙ
     for event in pygame.event.get():
         # выход из программы
@@ -99,9 +103,9 @@ def handle_events():
         if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
             # m = Menu()
             # m.run_menu(screen)
-            m = Menu()
+            # m = Menu()
             m.run(screen)
-
+            # m.run_begin_screen(screen)
 
         # ивенты движения (остановка на всякий случай)
         if event.type == pygame.KEYUP:
@@ -154,8 +158,8 @@ while running:
 
     # ОБНОВЛЕНИЕ
     screen.fill(BLACK)
-    background = pygame.image.load(os.path.join(img_dir, "plan_1.png")).convert()
-    background = pygame.transform.scale(background, (WIDTH_WINDOW, HEIGHT_WINDOW))
+    background = BACKGROUND.convert()
+    background = pygame.transform.scale(BACKGROUND, (WIDTH_WINDOW, HEIGHT_WINDOW))
     background_rect = background.get_rect()
     screen.blit(background, background_rect)
 
