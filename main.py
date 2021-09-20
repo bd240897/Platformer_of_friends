@@ -100,7 +100,7 @@ def handle_events():
             # m = Menu()
             # m.run_menu(screen)
             m = Menu()
-            m.run_menu(screen)
+            m.run(screen)
 
 
         # ивенты движения (остановка на всякий случай)
