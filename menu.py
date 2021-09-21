@@ -113,7 +113,7 @@ class Menu(pygame.sprite.Sprite):
             sounds_you_win.play()
         self.draw()
         self.update()
-        self.handler_begin_screen_events()
+        self.handler_begin_screen_events(status)
 
     def create(self, LIST_OF_TEXT):
         """Креатор окон - расоложения надписей"""
@@ -190,8 +190,7 @@ class Menu(pygame.sprite.Sprite):
         sounds_make_sword = pygame.mixer.Sound(os.path.join(snd_dir, 'make_sword_2.wav'))
 
         while self.done:
-
-            # удары меча в начале
+            # звуки ударов меча в начале
             if status == 'begin_window':
                 curtime = pygame.time.get_ticks()
                 if count_play < 3 and curtime - time_make >= 700:
@@ -199,13 +198,14 @@ class Menu(pygame.sprite.Sprite):
                     count_play += 1
                     time_make = pygame.time.get_ticks()
 
-
-            mouse = pygame.mouse.get_pos()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
+                if status in ['lose_game', 'win_game'] and event.type == pygame.KEYDOWN:
+                    sys.exit()
                 if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                     self.done = False
+
     def draw(self):
         for obj in self.objects:
             obj.draw(self.image)

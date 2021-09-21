@@ -65,8 +65,6 @@ class Mob(pygame.sprite.Sprite):
             self.speed_x = 0
 
     def update(self, *args, **kwargs):
-
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
-
         self.collision_edge()

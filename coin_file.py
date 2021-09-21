@@ -12,7 +12,6 @@ class Coins(pygame.sprite.Sprite):
         coin_img.set_colorkey(WHITE)
         self.image = coin_img
 
-
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         # поля персонажа

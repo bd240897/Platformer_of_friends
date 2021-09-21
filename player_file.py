@@ -5,16 +5,6 @@ from sword_file import Sword
 import os
 
 class Player(pygame.sprite.Sprite):
-    pygame.mixer.init()
-    sounds_make_sword = pygame.mixer.Sound(os.path.join(snd_dir, 'make_sword_2.wav'))
-    sounds_kill_mob = pygame.mixer.Sound(os.path.join(snd_dir, 'kill_mobs_2.wav'))
-    sounds_take_coin = pygame.mixer.Sound(os.path.join(snd_dir, 'take_coins_2.wav'))
-    sounds_take_damage = pygame.mixer.Sound(os.path.join(snd_dir, 'take_damage_2.wav'))
-    # настройка музыки
-    sounds_take_coin.set_volume(0.5)
-    sounds_make_sword.set_volume(0.5)
-    sounds_kill_mob.set_volume(0.5)
-
     """ Класс для описания игрока и его действий """
     def __init__(self, bloks, coins, mobs):
         pygame.sprite.Sprite.__init__(self)
@@ -25,7 +15,6 @@ class Player(pygame.sprite.Sprite):
         player_img = pygame.transform.scale(player_img, (PLAYER_HEIGHT, PLAYER_WIDTH))
         player_img.set_colorkey(GRAY)
         self.image = player_img
-
         self.rect = self.image.get_rect()
 
         # поля персонажа
@@ -33,12 +22,10 @@ class Player(pygame.sprite.Sprite):
         self.speed_y = 0
         self.onGround = False # флаг - стоит ли персонаж не земле
 
-
         # точка спавна перса
         self.rect.centerx = WIDTH_WINDOW / 2 # базовое расположение
         self.rect.bottom = HEIGHT_WINDOW - 50 - 2*PLATFORM_HEIGHT
         self.orig_coord = self.rect.center
-
 
         # взаиодействие с другими объектами
         self.bloks = bloks
@@ -56,6 +43,21 @@ class Player(pygame.sprite.Sprite):
         self.win_game = False
         self.lose_game = False
         self.sounds_play = False
+
+        # создадим музыку
+        self.create_music()
+
+    def create_music(self):
+        "Cоздает обхекты для музыки"
+        pygame.mixer.init()
+        self.sounds_make_sword = pygame.mixer.Sound(os.path.join(snd_dir, 'make_sword_2.wav'))
+        self.sounds_kill_mob = pygame.mixer.Sound(os.path.join(snd_dir, 'kill_mobs_2.wav'))
+        self.sounds_take_coin = pygame.mixer.Sound(os.path.join(snd_dir, 'take_coins_2.wav'))
+        self.sounds_take_damage = pygame.mixer.Sound(os.path.join(snd_dir, 'take_damage_2.wav'))
+        # настройка музыки
+        self.sounds_take_coin.set_volume(0.5)
+        self.sounds_make_sword.set_volume(0.5)
+        self.sounds_kill_mob.set_volume(0.5)
 
     def hanler_sounds(self, sounds):
         if not self.sounds_play:
