@@ -11,10 +11,10 @@ from menu import Menu
 
 # Создаем игру и окно
 pygame.init()
-pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH_WINDOW, HEIGHT_WINDOW))
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
+
 
 # cоздаим группы и добави туда объекты
 all_bloks = pygame.sprite.Group()
@@ -86,6 +86,20 @@ def create_objects():
     create_platforms()
     create_mobs()
 
+
+main_music_flag = 'init'
+def play_main_music(emurgance_stop = False):
+    global main_music_flag
+    if main_music_flag == 'init':
+        sounds_main_theme = os.path.join(snd_dir, 'main_theme_sounds.mp3')
+        pygame.mixer.music.load(sounds_main_theme)
+        pygame.mixer.music.set_volume(0.1)
+        pygame.mixer.music.play(-1)
+        main_music_flag = 'play'
+    elif main_music_flag == 'stop' or emurgance_stop:
+        pygame.mixer.music.pause()
+
+
 def handle_events():
     global m
     m = Menu(screen)
@@ -93,6 +107,8 @@ def handle_events():
     if not WAS_START_SCREEN:
         m.run_begin_screen()
         WAS_START_SCREEN = True
+
+    play_main_music()
 
     # ивенты НАЖАТИЙ
     for event in pygame.event.get():
@@ -102,7 +118,7 @@ def handle_events():
             running = False
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
-            m.run()
+            m.run_menu_outside()
 
         # ивенты движения (остановка на всякий случай)
         if event.type == pygame.KEYUP:
@@ -143,12 +159,13 @@ def handle_events():
         player.go_down()
 
 def handler_end_game(m):
+    global main_music_flag
     if player.win_game:
+        play_main_music(emurgance_stop=True)
         m.run_end_game('win_game')
-        print('outside_you_win')
     if player.lose_game:
+        play_main_music(emurgance_stop=True)
         m.run_end_game('lose_game')
-        print('outside_you_lose')
 
 # Цикл игры
 camera = Camera(camera_configure, TOTAL_LEVEL_WEIGHT, TOTAL_LEVEL_HEIGHT)

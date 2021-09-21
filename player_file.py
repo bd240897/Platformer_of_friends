@@ -5,6 +5,16 @@ from sword_file import Sword
 import os
 
 class Player(pygame.sprite.Sprite):
+    pygame.mixer.init()
+    sounds_make_sword = pygame.mixer.Sound(os.path.join(snd_dir, 'make_sword_2.wav'))
+    sounds_kill_mob = pygame.mixer.Sound(os.path.join(snd_dir, 'kill_mobs_2.wav'))
+    sounds_take_coin = pygame.mixer.Sound(os.path.join(snd_dir, 'take_coins_2.wav'))
+    sounds_take_damage = pygame.mixer.Sound(os.path.join(snd_dir, 'take_damage_2.wav'))
+    # настройка музыки
+    sounds_take_coin.set_volume(0.5)
+    sounds_make_sword.set_volume(0.5)
+    sounds_kill_mob.set_volume(0.5)
+
     """ Класс для описания игрока и его действий """
     def __init__(self, bloks, coins, mobs):
         pygame.sprite.Sprite.__init__(self)
@@ -45,6 +55,13 @@ class Player(pygame.sprite.Sprite):
         self.count_kill_mobs = 0
         self.win_game = False
         self.lose_game = False
+        self.sounds_play = False
+
+    def hanler_sounds(self, sounds):
+        if not self.sounds_play:
+            self.sounds_play = True
+            sounds.play()
+            self.sounds_play = False
 
     def go_lef(self):
         """Шаг влево"""
@@ -82,7 +99,8 @@ class Player(pygame.sprite.Sprite):
         selected_coins = pygame.sprite.spritecollide(self, self.coins, True)
         for selected_coin in selected_coins:
             self.selected_coins += 1
-            print(self.selected_coins)
+            # self.sounds_take_coin.play()
+            self.hanler_sounds(self.sounds_take_coin)
 
     def collision_sword_and_mobs(self):
         """Взаиодействие меча с врагами с врагами"""
@@ -91,6 +109,8 @@ class Player(pygame.sprite.Sprite):
             hit.kill()
             self.count_kill_mobs += 1
             self.selected_coins += 2
+            # self.sounds_kill_mob.play()
+            self.hanler_sounds(self.sounds_kill_mob)
 
         if COUNT_MOBS == self.count_kill_mobs:
             self.win_game = True
@@ -103,11 +123,15 @@ class Player(pygame.sprite.Sprite):
         if self.time_player_and_mobs == 0:
             for hit in hits:
                 self.time_player_and_mobs = pygame.time.get_ticks()
-                self.healf -= 10
+                self.healf -= 30
+                # self.sounds_take_damage.play()
+                self.hanler_sounds(self.sounds_take_damage)
         elif curr_time - self.time_player_and_mobs > 1000:
             for hit in hits:
                 self.time_player_and_mobs = pygame.time.get_ticks()
-                self.healf -= 10
+                self.healf -= 30
+                # self.sounds_take_damage.play()
+                self.hanler_sounds(self.sounds_take_damage)
         if self.healf == 0 or self.healf < 0:
             self.lose_game = True
 
@@ -160,6 +184,8 @@ class Player(pygame.sprite.Sprite):
     def make_sword(self):
         if self.sword_exist:
             self.sword.down_sword()
+            # self.sounds_make_sword.play()
+            self.hanler_sounds(self.sounds_make_sword)
 
     def update(self):
         self.gravitation()

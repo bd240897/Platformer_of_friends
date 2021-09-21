@@ -100,6 +100,7 @@ for i, row in enumerate(level):  # вся строка
 
 
 img_dir = os.path.join(os.path.dirname(__file__), 'img')
+snd_dir = os.path.join(os.path.dirname(__file__), 'snd')
 
 SWORD_SHIFT_X = 10
 SWORD_SHIFT_Y = 42
