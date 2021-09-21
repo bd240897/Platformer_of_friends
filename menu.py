@@ -3,6 +3,15 @@ from constants import *
 import sys
 
 class Menu(pygame.sprite.Sprite):
+    def __init__(self, screen, color = GREEN):
+        pygame.sprite.Sprite.__init__(self)
+        self.screen = screen
+        self.image = pygame.Surface((TOTAL_LEVEL_WEIGHT, TOTAL_LEVEL_HEIGHT))
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
+        self.objects = []
+        self.done = True
+
 
     def quit(self):
         self.done = False
@@ -19,47 +28,41 @@ class Menu(pygame.sprite.Sprite):
 
     def HELP_back(self):
         print('Бэк')
-        self.__init__()
+        self.__init__(self.screen)
         self.create_menu()
         self.draw()
-        self.update(self.screen)
+        self.update()
         self.handler_menu_events()
 
     def run_help(self):
-        self.__init__()
+        self.__init__(self.screen)
         self.create_help()
         self.draw()
-        self.update(self.screen)
+        self.update()
         self.handler_help_events()
 
-    def run_begin_screen(self, screen):
-        self.screen = screen
-        self.__init__()
+    def run_begin_screen(self):
+        self.__init__(self.screen)
         self.create_begin_screen(self.BEGIN_TEXT)
         background = BACKGROUND.convert()
         background = pygame.transform.scale(BACKGROUND, (WIDTH_WINDOW, HEIGHT_WINDOW))
         background_rect = background.get_rect()
         self.image.blit(background, background_rect)
         self.draw()
-        self.update(self.screen)
+        self.update()
         self.handler_begin_screen_events()
 
-    def run_end_game(self, screen, status):
-        self.screen = screen
-        self.__init__()
+    def run_end_game(self, status):
         if status == 'lose_game':
+            self.__init__(self.screen, color=BLACK)
             self.create_begin_screen(self.GAME_OVER_TEXT)
         elif status == 'win_game':
+            self.__init__(self.screen, color=BLUE)
             self.create_begin_screen(self.WIN_TEXT)
         self.draw()
-        self.update(self.screen)
+        self.update()
         self.handler_begin_screen_events()
 
-    def run_you_win(self):
-        pass
-
-    def run_you_lost(self):
-        pass
 ##################################################### входные данные ###############################3
     button_1 = [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 5, u"1. Продолжить", WHITE, quit]
     button_2 = [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 9, u"2. Справка", WHITE, run_help]
@@ -88,21 +91,15 @@ class Menu(pygame.sprite.Sprite):
         LIST_HELP.append(one_support)
 
     BEGIN_TEXT = [
-    [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 7, u"ИГРА: \"No NAME GAME\"", BLUE, lambda x: None, 70],
-    [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 11, u"Написал: Борисов Д.А.", WHITE, lambda x: None, 50],
+    [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 6, u"ИГРА: \"No NAME GAME\"", BLUE, lambda x: None, 70],
+    [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 10, u"Написал: Борисов Д.А.", WHITE, lambda x: None, 50],
     [PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 16, u"Нажмите любю кнопку для продолжения", RED, lambda x: None, 40]]
 
     WIN_TEXT = [[PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 9, u'YOU WIN', RED, lambda x: None, 90]]
-    GAME_OVER_TEXT = [[PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 9, u'GAME OVER', RED, lambda x: None, 90]]
+    GAME_OVER_TEXT = [[PLATFORM_WIDTH * 12, PLATFORM_WIDTH * 9, u'YOU DIED', RED, lambda x: None, 90]]
 
 ##############################################################
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((TOTAL_LEVEL_WEIGHT, TOTAL_LEVEL_HEIGHT))
-        self.image.fill(GREEN)
-        self.rect = self.image.get_rect()
-        self.objects = []
-        self.done = True
+
 
     def create_menu(self):
         self.objects.clear()
@@ -141,15 +138,15 @@ class Menu(pygame.sprite.Sprite):
         for obj in self.objects:
             obj.draw(self.image)
 
-    def update(self, screen):
-        screen.blit(self.image, (0,0))
+    def update(self):
+        self.screen.blit(self.image, (0,0))
         pygame.display.flip()
 
-    def run(self, screen):
-        self.screen = screen
+    def run(self):
+        self.screen = self.screen
         self.create_menu()
         self.draw()
-        self.update(screen)
+        self.update()
         self.handler_menu_events()
 
     def handler_menu_events(self):
@@ -171,7 +168,7 @@ class Menu(pygame.sprite.Sprite):
                         self.LIST_BUTTONS[index][3] = BLACK
                         self.create_menu()
                         self.draw()
-                        self.update(self.screen)
+                        self.update()
                         # проверяем нажата ли кнопка
                         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                             active_button.click_handler(self)
@@ -195,7 +192,7 @@ class Menu(pygame.sprite.Sprite):
                             self.LIST_HELP[last_element][3] = RED
                         self.create_help()
                         self.draw()
-                        self.update(self.screen)
+                        self.update()
                         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                             active_button.click_handler(self)
 

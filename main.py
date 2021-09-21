@@ -88,10 +88,10 @@ def create_objects():
 
 def handle_events():
     global m
-    m = Menu()
+    m = Menu(screen)
     global WAS_START_SCREEN
     if not WAS_START_SCREEN:
-        m.run_begin_screen(screen)
+        m.run_begin_screen()
         WAS_START_SCREEN = True
 
     # ивенты НАЖАТИЙ
@@ -102,11 +102,7 @@ def handle_events():
             running = False
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
-            # m = Menu()
-            # m.run_menu(screen)
-            # m = Menu()
-            m.run(screen)
-            # m.run_begin_screen(screen)
+            m.run()
 
         # ивенты движения (остановка на всякий случай)
         if event.type == pygame.KEYUP:
@@ -148,10 +144,10 @@ def handle_events():
 
 def handler_end_game(m):
     if player.win_game:
-        m.run_end_game(screen, 'win_game')
+        m.run_end_game('win_game')
         print('outside_you_win')
     if player.lose_game:
-        m.run_end_game(screen, 'lose_game')
+        m.run_end_game('lose_game')
         print('outside_you_lose')
 
 # Цикл игры
