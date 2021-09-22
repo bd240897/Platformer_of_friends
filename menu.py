@@ -2,12 +2,13 @@ import pygame
 from constants import *
 import sys
 import os
+from level_file import Level
 
 class Menu(pygame.sprite.Sprite):
     def __init__(self, screen, color = GREEN):
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
-        self.image = pygame.Surface((TOTAL_LEVEL_WEIGHT, TOTAL_LEVEL_HEIGHT))
+        self.image = pygame.Surface(Level.TOTAL_LEVEL_SIZE)
         self.image.fill(color)
         self.rect = self.image.get_rect()
         self.objects = []

@@ -7,11 +7,13 @@ from platform_file import Platform
 from sword_file import Sword
 from constants import *
 from menu import Menu
-from menu import Menu
 from camera_file import Camera
+import random
+from level_file import Level
 
 class Main():
     def __init__(self):
+        Level.next_level() ########### ПЕРЕКЛЮЧЕНИЕ УРОВН
         # Создаем игру и окно
         pygame.init()
         pygame.mixer.init()
@@ -24,7 +26,8 @@ class Main():
         self.main_music_flag = 'init'
         self.WAS_START_SCREEN = False
         self.running = True
-        self.camera = Camera(Camera.camera_configure, TOTAL_LEVEL_WEIGHT, TOTAL_LEVEL_HEIGHT)
+        self.camera = Camera(Camera.camera_configure, *Level.TOTAL_LEVEL_SIZE)
+        # self.camera = Camera(Camera.camera_configure, *(33*PLATFORM_WIDTH, 26*PLATFORM_HEIGHT))
 
 ########################################################################################################################
     """Креаторы объектов"""
@@ -36,17 +39,27 @@ class Main():
         self.all_coins = pygame.sprite.Group()
         self.all_mobs = pygame.sprite.Group()
 
-    def create_player(self):
+    def create_player(self, x, y):
         """Создим персанажа"""
-        self.player = Player(TOTAL_LEVEL_WEIGHT//2, PLATFORM_HEIGHT*3, self.all_bloks, self.all_coins, self.all_mobs)
+        self.player = Player(x, y, self.all_bloks, self.all_coins, self.all_mobs)
         self.all_sprites.add(self.player)
 
-    def create_mobs(self):
+    def create_mobs(self, LEVEL_OF_DIGIT):
+        level_digit, num_blok_x, num_blok_y = get_map_platform(LEVEL_OF_DIGIT)
         """Создим мобов"""
         for num_mob in range(1, COUNT_MOBS+1):
-            mob = Mob(*Mob.random_mob_position(), self.all_bloks)
+            mob = Mob(*Main.random_mob_position(level_digit, num_blok_x, num_blok_y), self.all_bloks)
             self.all_mobs.add(mob)
             self.all_sprites.add(mob)
+
+    @staticmethod
+    def random_mob_position(level_digit, num_blok_x, num_blok_y):
+        """Выбор случайно позиции для моба"""
+        i, j = (0, 0)
+        while not sum(level_digit[i][j]) > 0:
+            i = random.randint(1, num_blok_x - 2)
+            j = random.randint(1, num_blok_y - 2)
+        return level_digit[i][j]
 
     def create_sword(self):
         """Создим мечь"""
@@ -54,11 +67,11 @@ class Main():
         self.player.create_sword(sword)
         self.all_sprites.add(sword)
 
-    def create_platforms(self):
+    def create_platforms(self, LIST_OF_LEVEL):
         """Создим уровень и монетки на нем"""
         # рисование уровня
         x = y = 0  # координаты
-        for row in level_2:  # вся строка
+        for row in LIST_OF_LEVEL:  # вся строка
             for col in row:  # каждый символ
                 if col == "-":
                     one_platform = Platform(x,y)
@@ -74,10 +87,12 @@ class Main():
 
     def create_objects(self):
         """Создим все что создается"""
+        cur_point_spawn = Level.CURRENT_POINT_OF_SPAWN
+        cur_level = Level.CURRENT_LEVEL
         self.crete_group()
-        self.create_player()
-        self.create_platforms()
-        self.create_mobs()
+        self.create_player(*cur_point_spawn)
+        self.create_platforms(cur_level)
+        self.create_mobs(cur_level)
 ########################################################################################################################
         """Работа с музыкой"""
 
@@ -186,11 +201,6 @@ class Main():
             # РЕНДЕРИНГ
             pygame.display.flip()
             self.handle_end_game()
-
-class Level():
-    def __init__(self):
-        self.list_level = [level, level_2]
-        self.point_spawn_player = [point_spawn_player_1, point_spawn_player_2]
 
 main = Main()
 main.run()

@@ -24,15 +24,6 @@ class Mob(pygame.sprite.Sprite):
         # взаимодействует с блоками
         self.bloks = bloks
 
-    @staticmethod
-    def random_mob_position():
-        """Выбор случайно позиции для моба"""
-        i, j = (0, 0)
-        while not sum(level_digit[i][j]) > 0:
-            i = random.randint(1, num_blok_x - 2)
-            j = random.randint(1, num_blok_y - 2)
-        return level_digit[i][j]
-
     def collision_edge(self):
         """Моб проверяет что это край карты и разворачивается"""
         # переменная для проверки что всего один блок под собой
