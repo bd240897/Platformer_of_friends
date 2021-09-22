@@ -8,197 +8,176 @@ from sword_file import Sword
 from constants import *
 from menu import Menu
 from menu import Menu
+from camera_file import Camera
 
-# Создаем игру и окно
-pygame.init()
-screen = pygame.display.set_mode((WIDTH_WINDOW, HEIGHT_WINDOW))
-pygame.display.set_caption("My Game")
-clock = pygame.time.Clock()
+class Main():
+    def __init__(self):
+        # Создаем игру и окно
+        pygame.init()
+        pygame.mixer.init()
+        self.screen = pygame.display.set_mode((WIDTH_WINDOW, HEIGHT_WINDOW))
+        pygame.display.set_caption("My Game")
+        self.clock = pygame.time.Clock()
+        self.create_objects()
+
+        # поля класса
+        self.main_music_flag = 'init'
+        self.WAS_START_SCREEN = False
+        self.running = True
+        self.camera = Camera(Camera.camera_configure, TOTAL_LEVEL_WEIGHT, TOTAL_LEVEL_HEIGHT)
+
+########################################################################################################################
+    """Креаторы объектов"""
+
+    def crete_group(self):
+        # cоздаим группы и добави туда объекты
+        self.all_bloks = pygame.sprite.Group()
+        self.all_sprites = pygame.sprite.Group()
+        self.all_coins = pygame.sprite.Group()
+        self.all_mobs = pygame.sprite.Group()
+
+    def create_player(self):
+        self.player = Player(self.all_bloks, self.all_coins, self.all_mobs)
+        self.all_sprites.add(self.player)
+
+    def create_mobs(self):
+        for num_mob in range(1, COUNT_MOBS+1):
+            mob = Mob(*Mob.random_mob_position(), self.all_bloks)
+            self.all_mobs.add(mob)
+            self.all_sprites.add(mob)
+
+    def create_sword(self):
+        sword = Sword(self.player)
+        self.player.create_sword(sword)
+        self.all_sprites.add(sword)
+
+    def create_platforms(self):
+        # рисование уровня
+        x = y = 0  # координаты
+        for row in level:  # вся строка
+            for col in row:  # каждый символ
+                if col == "-":
+                    one_platform = Platform(x,y)
+                    self.all_bloks.add(one_platform)
+                    self.all_sprites.add(one_platform)
+                if col == "*":
+                    one_coin = Coins(x, y)
+                    self.all_coins.add(one_coin)
+                    self.all_sprites.add(one_coin)
+                x += PLATFORM_WIDTH  # блоки платформы ставятся на ширине блоков
+            y += PLATFORM_HEIGHT  # то же самое и с высотой
+            x = 0  # на каждой новой строчке начинаем с нуля
+
+    def create_objects(self):
+        self.crete_group()
+        self.create_player()
+        self.create_platforms()
+        self.create_mobs()
+########################################################################################################################
+        """Работа с музыкой"""
+
+    def play_main_music(self, emurgance_stop=False):
+        pygame.mixer.init()
+        if self.main_music_flag == 'init':
+            sounds_main_theme = os.path.join(snd_dir, 'main_theme_sounds.mp3')
+            pygame.mixer.music.load(sounds_main_theme)
+            pygame.mixer.music.set_volume(0.1)
+            pygame.mixer.music.play(-1)
+            self.main_music_flag = 'play'
+        elif self.main_music_flag == 'stop' or emurgance_stop:
+            pygame.mixer.music.pause()
+
+########################################################################################################################
+        """Обрабочики событий"""
+
+    def handle_events(self):
+        # запуск стартового экрана
+        self.m = Menu(self.screen)
+        if not self.WAS_START_SCREEN:
+            self.m.run_begin_screen()
+            self.WAS_START_SCREEN = True
+
+        # запуск музыки
+        self.play_main_music()
+
+        # ивенты НАЖАТИЙ
+        for event in pygame.event.get():
+            # выход из программы
+            if event.type == pygame.QUIT:
+                self.running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                self.m.run_menu_outside()
+            # ивенты движения (остановка на всякий случай)
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT and self.player.speed_x < 0:
+                    self.player.stop()
+                if event.key == pygame.K_RIGHT and self.player.speed_x > 0:
+                    self.player.stop()
+            # ивенты удара и доставания меча
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+                sword_side = 'left'
+                if self.player.sword_exist:
+                    self.player.remove_sword()
+                else:
+                    self.create_sword()
+                    self.player.take_sword(sword_side)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
+                sword_side = 'right'
+                if self.player.sword_exist:
+                    self.player.remove_sword()
+                else:
+                    self.create_sword()
+                    self.player.take_sword(sword_side)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                self.player.make_sword()
+        # ивенты движения
+        keystate = pygame.key.get_pressed()
+        if keystate[pygame.K_LEFT]:
+            self.player.go_lef()
+        if keystate[pygame.K_RIGHT]:
+            self.player.go_right()
+        if keystate[pygame.K_UP]:
+            self.player.go_jump()
+        if keystate[pygame.K_DOWN]:
+            self.player.go_down()
+
+    def handler_end_game(self):
+        if self.player.win_game:
+            self.play_main_music(emurgance_stop=True)
+            self.m.run_end_game('win_game')
+        if self.player.lose_game:
+            self.play_main_music(emurgance_stop=True)
+            self.m.run_end_game('lose_game')
+
+    def handle_main_menu(self):
+        # Цикл игры
+        while self.running:
+            # Держим цикл на правильной скорости
+            self.clock.tick(FPS)
+
+            # Ввод процесса (события)
+            self.handle_events()
+
+            # ОБНОВЛЕНИЕ
+            self.screen.fill(BLACK)
+            background = BACKGROUND.convert()
+            background = pygame.transform.scale(background, (WIDTH_WINDOW, HEIGHT_WINDOW))
+            background_rect = background.get_rect()
+            self.screen.blit(background, background_rect)
+
+            # работы с камерой
+            self.camera.update(self.player)  # центризируем камеру относительно персонажа
+            for sprites in self.all_sprites:
+                self.screen.blit(sprites.image, self.camera.apply(sprites))
+                sprites.update()
+
+            # отрисуем здоровье
+            self.player.draw_healf(self.screen)
+
+            # РЕНДЕРИНГ
+            pygame.display.flip()
+            self.handler_end_game()
 
 
-# cоздаим группы и добави туда объекты
-all_bloks = pygame.sprite.Group()
-all_sprites = pygame.sprite.Group()
-all_coins = pygame.sprite.Group()
-all_mobs = pygame.sprite.Group()
-
-class Camera(object):
-    def __init__(self, camera_func, width_level, height_level):
-        self.camera_func = camera_func
-        self.rect_level = pygame.Rect(0, 0, width_level, height_level)
-
-    def apply(self, obj):
-        return obj.rect.move(self.rect_level.topleft)
-
-    def update(self, player):
-        self.rect_level = self.camera_func(self.rect_level, player.rect)
-
-
-def camera_configure(rect_level, player_rect):
-    # создаем прямоугольник с центром у персе и размером с игровой экран
-    l, t, _, _ = player_rect
-    _, _, w, h = rect_level
-    l, t = -l + WIDTH_WINDOW/2, -t + HEIGHT_WINDOW/2
-
-    l = min(0, l)  # Не движемся дальше левой границы
-    l = max(-(rect_level.width - WIDTH_WINDOW), l)  # Не движемся дальше правой границы
-    t = max(-(rect_level.height - HEIGHT_WINDOW), t)  # Не движемся дальше нижней границы
-    t = min(0, t)  # Не движемся дальше верхней границы
-
-    return pygame.Rect(l, t, w, h)
-
-
-def create_player():
-    global player
-    player = Player(all_bloks, all_coins, all_mobs)
-    all_sprites.add(player)
-
-def create_mobs():
-    for num_mob in range(1, COUNT_MOBS+1):
-        mob = Mob(*Mob.random_mob_position(), all_bloks)
-        all_mobs.add(mob)
-        all_sprites.add(mob)
-
-def create_sword(player):
-    sword = Sword(player)
-    player.create_sword(sword)
-    all_sprites.add(sword)
-
-def create_platforms():
-    # рисование уровня
-    x = y = 0  # координаты
-    for row in level:  # вся строка
-        for col in row:  # каждый символ
-            if col == "-":
-                one_platform = Platform(x,y)
-                all_bloks.add(one_platform)
-                all_sprites.add(one_platform)
-            if col == "*":
-                one_coin = Coins(x, y)
-                all_coins.add(one_coin)
-                all_sprites.add(one_coin)
-            x += PLATFORM_WIDTH  # блоки платформы ставятся на ширине блоков
-        y += PLATFORM_HEIGHT  # то же самое и с высотой
-        x = 0  # на каждой новой строчке начинаем с нуля
-
-def create_objects():
-    create_player()
-    create_platforms()
-    create_mobs()
-
-
-main_music_flag = 'init'
-def play_main_music(emurgance_stop = False):
-    global main_music_flag
-    if main_music_flag == 'init':
-        sounds_main_theme = os.path.join(snd_dir, 'main_theme_sounds.mp3')
-        pygame.mixer.music.load(sounds_main_theme)
-        pygame.mixer.music.set_volume(0.1)
-        pygame.mixer.music.play(-1)
-        main_music_flag = 'play'
-    elif main_music_flag == 'stop' or emurgance_stop:
-        pygame.mixer.music.pause()
-
-
-def handle_events():
-    global m
-    m = Menu(screen)
-    global WAS_START_SCREEN
-    if not WAS_START_SCREEN:
-        m.run_begin_screen()
-        WAS_START_SCREEN = True
-
-    play_main_music()
-
-    # ивенты НАЖАТИЙ
-    for event in pygame.event.get():
-        # выход из программы
-        if event.type == pygame.QUIT:
-            global running
-            running = False
-
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
-            m.run_menu_outside()
-
-        # ивенты движения (остановка на всякий случай)
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT and player.speed_x < 0:
-                player.stop()
-            if event.key == pygame.K_RIGHT and player.speed_x > 0:
-                player.stop()
-
-        # ивенты удара и доставания меча
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
-            sword_side = 'left'
-            if player.sword_exist:
-                player.remove_sword()
-            else:
-                create_sword(player)
-                player.take_sword(sword_side)
-
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
-            sword_side = 'right'
-            if player.sword_exist:
-                player.remove_sword()
-            else:
-                create_sword(player)
-                player.take_sword(sword_side)
-
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-            player.make_sword()
-
-    # ивенты движения
-    keystate = pygame.key.get_pressed()
-    if keystate[pygame.K_LEFT]:
-        player.go_lef()
-    if keystate[pygame.K_RIGHT]:
-        player.go_right()
-    if keystate[pygame.K_UP]:
-        player.go_jump()
-    if keystate[pygame.K_DOWN]:
-        player.go_down()
-
-def handler_end_game(m):
-    global main_music_flag
-    if player.win_game:
-        play_main_music(emurgance_stop=True)
-        m.run_end_game('win_game')
-    if player.lose_game:
-        play_main_music(emurgance_stop=True)
-        m.run_end_game('lose_game')
-
-# Цикл игры
-camera = Camera(camera_configure, TOTAL_LEVEL_WEIGHT, TOTAL_LEVEL_HEIGHT)
-create_objects()
-running = True
-while running:
-    # Держим цикл на правильной скорости
-    clock.tick(FPS)
-
-    # Ввод процесса (события)
-    handle_events()
-
-    # ОБНОВЛЕНИЕ
-    screen.fill(BLACK)
-    background = BACKGROUND.convert()
-    background = pygame.transform.scale(BACKGROUND, (WIDTH_WINDOW, HEIGHT_WINDOW))
-    background_rect = background.get_rect()
-    screen.blit(background, background_rect)
-
-    camera.update(player)  # центризируем камеру относительно персонажа
-    for sprites in all_sprites:
-        screen.blit(sprites.image, camera.apply(sprites))
-        sprites.update()
-
-    # отрисуем здоровье
-    player.draw_healf(screen)
-
-    # all_sprites.update()
-
-    # РЕНДЕРИНГ
-    # all_sprites.draw(screen)
-    # После отрисовки всего, переворачиваем экран
-    pygame.display.flip()
-
-    handler_end_game(m)
-pygame.quit()
+main = Main()
+main.handle_main_menu()
