@@ -30,31 +30,35 @@ class Main():
     """Креаторы объектов"""
 
     def crete_group(self):
-        # cоздаим группы и добави туда объекты
+        """Создаем группы для хранения объектов"""
         self.all_bloks = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group()
         self.all_coins = pygame.sprite.Group()
         self.all_mobs = pygame.sprite.Group()
 
     def create_player(self):
-        self.player = Player(self.all_bloks, self.all_coins, self.all_mobs)
+        """Создим персанажа"""
+        self.player = Player(TOTAL_LEVEL_WEIGHT//2, PLATFORM_HEIGHT*3, self.all_bloks, self.all_coins, self.all_mobs)
         self.all_sprites.add(self.player)
 
     def create_mobs(self):
+        """Создим мобов"""
         for num_mob in range(1, COUNT_MOBS+1):
             mob = Mob(*Mob.random_mob_position(), self.all_bloks)
             self.all_mobs.add(mob)
             self.all_sprites.add(mob)
 
     def create_sword(self):
+        """Создим мечь"""
         sword = Sword(self.player)
         self.player.create_sword(sword)
         self.all_sprites.add(sword)
 
     def create_platforms(self):
+        """Создим уровень и монетки на нем"""
         # рисование уровня
         x = y = 0  # координаты
-        for row in level:  # вся строка
+        for row in level_2:  # вся строка
             for col in row:  # каждый символ
                 if col == "-":
                     one_platform = Platform(x,y)
@@ -69,6 +73,7 @@ class Main():
             x = 0  # на каждой новой строчке начинаем с нуля
 
     def create_objects(self):
+        """Создим все что создается"""
         self.crete_group()
         self.create_player()
         self.create_platforms()
@@ -77,6 +82,7 @@ class Main():
         """Работа с музыкой"""
 
     def play_main_music(self, emurgance_stop=False):
+        """Фоновая музыка"""
         pygame.mixer.init()
         if self.main_music_flag == 'init':
             sounds_main_theme = os.path.join(snd_dir, 'main_theme_sounds.mp3')
@@ -91,6 +97,7 @@ class Main():
         """Обрабочики событий"""
 
     def handle_events(self):
+        """Обработка кнопок при управлении персом"""
         # запуск стартового экрана
         self.m = Menu(self.screen)
         if not self.WAS_START_SCREEN:
@@ -105,7 +112,8 @@ class Main():
             # выход из программы
             if event.type == pygame.QUIT:
                 self.running = False
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+            # запуск меню
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self.m.run_menu_outside()
             # ивенты движения (остановка на всякий случай)
             if event.type == pygame.KEYUP:
@@ -141,7 +149,8 @@ class Main():
         if keystate[pygame.K_DOWN]:
             self.player.go_down()
 
-    def handler_end_game(self):
+    def handle_end_game(self):
+        """Создание окна окончания игры """
         if self.player.win_game:
             self.play_main_music(emurgance_stop=True)
             self.m.run_end_game('win_game')
@@ -149,7 +158,7 @@ class Main():
             self.play_main_music(emurgance_stop=True)
             self.m.run_end_game('lose_game')
 
-    def handle_main_menu(self):
+    def run(self):
         # Цикл игры
         while self.running:
             # Держим цикл на правильной скорости
@@ -176,8 +185,12 @@ class Main():
 
             # РЕНДЕРИНГ
             pygame.display.flip()
-            self.handler_end_game()
+            self.handle_end_game()
 
+class Level():
+    def __init__(self):
+        self.list_level = [level, level_2]
+        self.point_spawn_player = [point_spawn_player_1, point_spawn_player_2]
 
 main = Main()
-main.handle_main_menu()
+main.run()

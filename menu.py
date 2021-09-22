@@ -31,12 +31,22 @@ class Menu(pygame.sprite.Sprite):
         self.update()
         self.handler_menu_events()
 
+    # изучили декаратор в классе
+    def _run_help_decarator(run_help):
+        def temp(self):
+            run_help(self)
+            self.draw()
+            self.update()
+            self.handler_help_events()
+        return temp
+
+    @_run_help_decarator
     def run_help(self):
         self.__init__(self.screen)
         self.create(self.LIST_HELP)
-        self.draw()
-        self.update()
-        self.handler_help_events()
+        # self.draw()
+        # self.update()
+        # self.handler_help_events()
 
 ########################################################################################################################
     '''Входные данные'''

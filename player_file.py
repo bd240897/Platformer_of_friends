@@ -6,7 +6,7 @@ import os
 
 class Player(pygame.sprite.Sprite):
     """ Класс для описания игрока и его действий """
-    def __init__(self, bloks, coins, mobs):
+    def __init__(self, x, y, bloks, coins, mobs):
         pygame.sprite.Sprite.__init__(self)
         # # отрисуем персонажа
         # self.image = pygame.Surface((30, 40))
@@ -23,8 +23,9 @@ class Player(pygame.sprite.Sprite):
         self.onGround = False # флаг - стоит ли персонаж не земле
 
         # точка спавна перса
-        self.rect.centerx = WIDTH_WINDOW / 2 # базовое расположение
-        self.rect.bottom = HEIGHT_WINDOW - 50 - 2*PLATFORM_HEIGHT
+        # self.rect.centerx = WIDTH_WINDOW / 2 # базовое расположение
+        # self.rect.bottom = HEIGHT_WINDOW - 50 - 2*PLATFORM_HEIGHT
+        self.rect.center = (x,y)
         self.orig_coord = self.rect.center
 
         # взаиодействие с другими объектами
